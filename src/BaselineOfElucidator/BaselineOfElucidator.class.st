@@ -10,5 +10,9 @@ BaselineOfElucidator >> baseline: spec [
 	spec
 		for: #common
 		do: [ spec
-				package: 'Elucidator'.]
+				baseline: 'Teapot'
+					with: [ spec
+						repository: 'github://zeroflag/Teapot/source';
+						loads: #('Deployment') ];
+				package: 'Elucidator' ]
 ]

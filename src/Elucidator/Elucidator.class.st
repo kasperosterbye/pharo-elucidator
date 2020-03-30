@@ -1,40 +1,120 @@
 Class {
 	#name : #Elucidator,
 	#superclass : #Object,
-	#category : #Elucidator
+	#instVars : [
+		'teapot'
+	],
+	#classInstVars : [
+		'instance'
+	],
+	#category : #'Elucidator-Core'
 }
+
+{ #category : #'as yet unclassified' }
+Elucidator class >> elucidatePackage: packageName [ 
+	self instance openBrowserOnPackage: packageName
+]
+
+{ #category : #accessing }
+Elucidator class >> instance [
+	instance ifNil: [ instance := self basicNew initialize ].
+	^ instance
+]
+
+{ #category : #accessing }
+Elucidator class >> new [
+	self error: 'Use "instance" to get singular instance'
+]
+
+{ #category : #accessing }
+Elucidator class >> newInstance [
+	instance ifNotNil: [ instance stop. instance := nil ].
+	^self instance
+]
+
+{ #category : #menu }
+Elucidator >> about [
+	^ 'Elucidate (verb) means: make (something) clear; explain: work such as theirs will help to elucidate this matter | [with clause] : in what follows I shall try to elucidate what I believe the problems to be.'
+]
 
 { #category : #'to clean later' }
 Elucidator >> allClasses [
 	^ Object allSubclasses 
 ]
 
-{ #category : #examples }
-Elucidator >> findExampleMethods [
-	"return a collecion of compiled methods which contain example code."
+{ #category : #private }
+Elucidator >> browseClass: className [
+	(className asClassInEnvironment: Smalltalk globals) browse.
+	^ ZnResponse new
+		statusLine: ZnStatusLine noContent;
+		yourself
+]
 
-	"I look for Pragmas of type: #example, exampleWidget #sampleInstance, #script, script:.
-	I look for methods with example in its name"
-
-	| exampleByName examplePragmaNames exampleByPragma |
-	examplePragmaNames := #(example exampleWidget sampleInstance script script:).
-	exampleByPragma := (Pragma allInstances
-		select: [ :pragma | examplePragmaNames includes: pragma selector ])
-		collect: [ :pragma | pragma method ].
-	exampleByName := (self allClasses
-		collect: [ :cl | 
-			cl methods
-				select:
-					[ :meth | meth selector includesSubstring: 'example' caseSensitive: false ] ])
-		flattened.
-	^ (exampleByName , exampleByPragma) asSet asOrderedCollection
+{ #category : #dispatching }
+Elucidator >> dispatch: req [
+	| html |
+	html := Elucidation dispatchHttpRequelst: req.
+	^ ZnResponse new
+		statusLine: ZnStatusLine ok;
+		entity: (ZnEntity html: html);
+		yourself
 ]
 
 { #category : #'as yet unclassified' }
-Elucidator >> packageCommentFor: aClass [
-	aClass package packageComment ifNotEmpty: [ :com | ^ com ].
-	^ ((aClass package definedClasses
-		collect: [ :cl | cl -> cl instanceSide organization classComment ])
-		asOrderedCollection
-		sort: [ :p1 :p2 | p1 value size > p2 value size ])
+Elucidator >> httpPrefix [
+	^ 'http://localhost:<1p>/' expandMacrosWith: self socketNumber
+]
+
+{ #category : #initialization }
+Elucidator >> indexHTML: req [
+	^ ZnHtmlOutputStream
+		streamContents: [ :html | 
+			html
+				page: 'Elucidator'
+					do: [ html tag: #div class: #main do: [ html tag: #p with: self about ] ];
+				tag: #div class: #main do: [ self sample: html ] ]
+]
+
+{ #category : #initialization }
+Elucidator >> initialize [
+	teapot := Teapot configure: {(#port -> self socketNumber)}.
+	teapot
+		GET:
+			'browseClass/<className>'
+				-> [ :req | self browseClass: (req at: #className) ];
+		GET: '/<elucidation>/<scope>/<subject>' -> [ :req | self dispatch: req ];
+		GET: '' -> [ :req | self indexHTML: req ];
+		start
+]
+
+{ #category : #'as yet unclassified' }
+Elucidator >> openBrowserOnPackage: packageName [
+	| url |
+	url := self httpPrefix , 'all/package/' , packageName.
+	WebBrowser openOn: url
+]
+
+{ #category : #examples }
+Elucidator >> sample [
+	^ 'I can elucidate packages or classes. Elucidation of <a href="localhost:20203/all/package/teapot">the package teapot</a>'
+]
+
+{ #category : #examples }
+Elucidator >> sample: html [
+	html
+		tag: #p
+		do: [ html
+				<<
+					'I can elucidate packages or classes. Elucidation of <a href="http://localhost:20203/all/package/teapot">the package teapot</a>' ]
+]
+
+{ #category : #'as yet unclassified' }
+Elucidator >> socketNumber [
+	"random socketNumber, just the year and month I wrote this code"
+	^ 20203
+]
+
+{ #category : #initialization }
+Elucidator >> stop [
+	teapot stop
 ]
