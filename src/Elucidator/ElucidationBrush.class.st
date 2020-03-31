@@ -61,8 +61,9 @@ ElucidationBrush >> page: title do: aBlock [
 ]
 
 { #category : #'instance creation' }
-ElucidationBrush >> par: txt [
-	stream tag: 'p' do: [ stream << txt ]
+ElucidationBrush >> par: paragraphText [
+	(paragraphText substrings: String cr) do: [ :par | stream tag: 'p' do: [ stream << par ] ]
+	
 ]
 
 { #category : #'instance creation' }
