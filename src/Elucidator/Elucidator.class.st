@@ -44,7 +44,7 @@ Elucidator >> allClasses [
 
 { #category : #private }
 Elucidator >> browseClass: className [
-	(className asClassInEnvironment: Smalltalk globals) browse.
+	className asClass browse.
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself

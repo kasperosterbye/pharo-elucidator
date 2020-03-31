@@ -62,8 +62,12 @@ ElucidationBrush >> page: title do: aBlock [
 
 { #category : #'instance creation' }
 ElucidationBrush >> par: paragraphText [
-	(paragraphText substrings: String cr) do: [ :par | stream tag: 'p' do: [ stream << par ] ]
+	"format paragraphText using its existing line-breaks"
 	
+	stream
+		tag: 'p'
+		attributes: {'style' . 'white-space: pre-line;'}
+		do: [ stream << paragraphText trim ]
 ]
 
 { #category : #'instance creation' }
