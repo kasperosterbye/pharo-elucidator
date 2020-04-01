@@ -1,11 +1,11 @@
 Class {
-	#name : #EluCommentsDispatcher,
-	#superclass : #EluDispatcher,
-	#category : #'Elucidator-Comments'
+	#name : #EluCommentsElucidation,
+	#superclass : #Elucidation,
+	#category : #Elucidator
 }
 
 { #category : #'as yet unclassified' }
-EluCommentsDispatcher >> classCommentsForPackage: aRPackage [
+EluCommentsElucidation >> classCommentsForPackage: aRPackage [
 			
 	^ (aRPackage definedClasses
 		collect: [ :cl | cl -> cl instanceSide organization classComment ])
@@ -14,11 +14,14 @@ EluCommentsDispatcher >> classCommentsForPackage: aRPackage [
 ]
 
 { #category : #'as yet unclassified' }
-EluCommentsDispatcher >> commentPackage: packageName html: html [
+EluCommentsElucidation >> elucidatePackage: packageName html: html [
 	"render the commentry for the package onto html"
 
 	| rPack packageComment classComments |
 	rPack := self findPackage: packageName.
+	rPack
+		ifNil: [ html heading: 'No package named: ' , packageName.
+			^ self ].
 	packageComment := self packageCommentForPackage: rPack.
 	classComments := self classCommentsForPackage: rPack.
 	packageComment
@@ -28,7 +31,7 @@ EluCommentsDispatcher >> commentPackage: packageName html: html [
 ]
 
 { #category : #'as yet unclassified' }
-EluCommentsDispatcher >> packageCommentForPackage: aRPackage [
+EluCommentsElucidation >> packageCommentForPackage: aRPackage [
 	aRPackage packageComment 
 		ifEmpty: [ ^'no package comment' ]
 		ifNotEmpty: [ :com | ^ com ].
@@ -36,20 +39,22 @@ EluCommentsDispatcher >> packageCommentForPackage: aRPackage [
 ]
 
 { #category : #rendering }
-EluCommentsDispatcher >> renderClassComments: classComments on: html [
+EluCommentsElucidation >> renderClassComments: classComments on: html [
 	"classComments is a collection of association, mapping classes to their comments"
 
+	classComments ifNotEmpty: [ html part: 'Class comments' ].
 	classComments
 		do: [ :pair | 
 			pair value
 				ifNotEmpty: [ "do not print empty comments"
 					html
-						heading: [ (html classBrowseLink: pair key). html htmlStream << ' comment:' ];
+						heading: [ html classBrowseLink: pair key.
+							html htmlStream << pair key name << ' comment:' ];
 						par: pair value ] ]
 ]
 
 { #category : #rendering }
-EluCommentsDispatcher >> renderPackageComment: packageComment on: html [
+EluCommentsElucidation >> renderPackageComment: packageComment on: html [
 	html
 		heading: 'Package comment: ';
 		par: packageComment

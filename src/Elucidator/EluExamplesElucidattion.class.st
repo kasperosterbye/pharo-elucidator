@@ -1,11 +1,16 @@
 Class {
-	#name : #EluExamplesDispatcher,
-	#superclass : #Object,
-	#category : #'Elucidator-Examples'
+	#name : #EluExamplesElucidattion,
+	#superclass : #Elucidation,
+	#category : #Elucidator
 }
 
+{ #category : #'to clean later' }
+EluExamplesElucidattion >> allClasses [
+	^ Object allSubclasses 
+]
+
 { #category : #examples }
-EluExamplesDispatcher >> findExampleMethods [
+EluExamplesElucidattion >> findExampleMethods [
 	"return a collecion of compiled methods which contain example code."
 
 	"I look for Pragmas of type: #example, exampleWidget #sampleInstance, #script, script:.
@@ -16,7 +21,7 @@ EluExamplesDispatcher >> findExampleMethods [
 	exampleByPragma := (Pragma allInstances
 		select: [ :pragma | examplePragmaNames includes: pragma selector ])
 		collect: [ :pragma | pragma method ].
-	exampleByName := (self allClasses
+	exampleByName := (self allClasses 
 		collect: [ :cl | 
 			cl methods
 				select:

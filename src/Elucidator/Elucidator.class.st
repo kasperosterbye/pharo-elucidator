@@ -7,7 +7,7 @@ Class {
 	#classInstVars : [
 		'instance'
 	],
-	#category : #'Elucidator-Core'
+	#category : #Elucidator
 }
 
 { #category : #'as yet unclassified' }
@@ -37,14 +37,9 @@ Elucidator >> about [
 	^ 'Elucidate (verb) means: make (something) clear; explain: work such as theirs will help to elucidate this matter | [with clause] : in what follows I shall try to elucidate what I believe the problems to be.'
 ]
 
-{ #category : #'to clean later' }
-Elucidator >> allClasses [
-	^ Object allSubclasses 
-]
-
 { #category : #private }
 Elucidator >> browseClass: className [
-	className asClass browse.
+	WorldState defer: [ className asClass browse withTool: ClyClassCommentEditorToolMorph do: [ :tool | tool selectAsMainTab ]  ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself
@@ -53,10 +48,12 @@ Elucidator >> browseClass: className [
 { #category : #dispatching }
 Elucidator >> dispatch: req [
 	| html |
-	html := Elucidation dispatchHttpRequelst: req.
+	html := ElucidationBrush new
+		on: (ZnHtmlOutputStream on: '' writeStream).
+	Elucidation dispatch: req on: html.
 	^ ZnResponse new
 		statusLine: ZnStatusLine ok;
-		entity: (ZnEntity html: html);
+		entity: (ZnEntity html: html htmlString);
 		yourself
 ]
 

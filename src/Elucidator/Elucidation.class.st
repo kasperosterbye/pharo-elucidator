@@ -10,19 +10,27 @@ request is forwarded from the elucidator
 Class {
 	#name : #Elucidation,
 	#superclass : #Object,
-	#category : #'Elucidator-Core'
+	#category : #Elucidator
 }
 
 { #category : #'as yet unclassified' }
-Elucidation class >> dispatchHttpRequelst: req [
-	| elucidation html |
+Elucidation class >> dispatch: req on: html [
+	| elucidation |
 	elucidation := req at: #elucidation.
-	html := ElucidationBrush new.
 	elucidation = #all
-		ifTrue: [ ^ html
-				page: 'All of ' , (req at: #subject)
-				do: [ EluAllDispatcher new
-						elucidate: (req at: #subject)
-						scope: (req at: #scope)
-						html: html ] ]
+		ifTrue: [ ^ EluAllElucidation new
+						handle: req
+						on: html ]
+]
+
+{ #category : #'as yet unclassified' }
+Elucidation >> findPackage: packageName [
+	"find package based on packageName. Ignore case and implementation class"
+	| allNames |
+	allNames := RPackageOrganizer default packageNames.
+	allNames
+		do: [ :pName | 
+			(pName sameAs: packageName)
+				ifTrue: [ ^ RPackageOrganizer default packageNamed: pName ] ].
+	^ nil
 ]
