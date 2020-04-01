@@ -39,7 +39,34 @@ Elucidator >> about [
 
 { #category : #private }
 Elucidator >> browseClass: className [
-	WorldState defer: [ className asClass browse withTool: ClyClassCommentEditorToolMorph do: [ :tool | tool selectAsMainTab ]  ].
+	| cls |
+	cls := (className endsWith: '%20class')
+		ifTrue: [ (className copyReplaceAll: '%20class' with: '') asClass class]
+		ifFalse: [ className asClass ].
+	WorldState defer: [ cls browse ].
+	^ ZnResponse new
+		statusLine: ZnStatusLine noContent;
+		yourself
+]
+
+{ #category : #private }
+Elucidator >> browseClassComment: className [
+	WorldState
+		defer: [ className asClass browse
+				withTool: ClyClassCommentEditorToolMorph
+				do: [ :tool | tool selectAsMainTab ] ].
+	^ ZnResponse new
+		statusLine: ZnStatusLine noContent;
+		yourself
+]
+
+{ #category : #private }
+Elucidator >> browseMethod: selector inClass: className [
+	| cls |
+	cls := (className endsWith: ' class')
+		ifTrue: [ (className copyReplaceAll: ' class' with: '') asClass class ]
+		ifFalse: [ className asClass ].
+	WorldState defer: [ (cls >> selector asSymbol) browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself
@@ -77,10 +104,16 @@ Elucidator >> initialize [
 	teapot := Teapot configure: {(#port -> self socketNumber)}.
 	teapot
 		GET:
+			'browseClassComment/<className>'
+				-> [ :req | self browseClassComment: (req at: #className) ];
+		GET:
 			'browseClass/<className>'
 				-> [ :req | self browseClass: (req at: #className) ];
-		GET: '/<elucidation>/<scope>/<subject>' -> [ :req | self dispatch: req ];
-		GET: '' -> [ :req | self indexHTML: req ];
+		GET:
+			'browseMethod/<className>/<selector>'
+				-> [ :req | self browseMethod: (req at: #selector) inClass: (req at: #className) ];
+		GET:
+			'/<elucidation>/<scope>/<subject>' -> [ :req | self dispatch: req ];
 		start
 ]
 

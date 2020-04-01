@@ -89,12 +89,19 @@ ElucidationBrush >> htmlString [
 
 { #category : #'html rendering' }
 ElucidationBrush >> item: string [
-	stream tag: 'li' do: string
+	string isBlock
+		ifTrue: [ stream tag: 'li' do: string ]
+		ifFalse: [ stream tag: 'li' do: [ stream << string ] ]
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> link: string to: anchor [
 	stream tag: 'a' attributes: {'href'. anchor} do: [ stream << string ]
+]
+
+{ #category : #'html rendering' }
+ElucidationBrush >> methodBrowseLink: aMethod [
+	self elucidateLinkTo: 'browseMethod/' , aMethod methodClass name, '/', aMethod selector
 ]
 
 { #category : #'instance creation' }
@@ -132,6 +139,11 @@ ElucidationBrush >> part: title [
 		ifTrue: [ stream tag: 'h2' do: title ]
 		ifFalse: [ stream tag: 'h2' do: [ stream << title ] ].
 	stream tag: 'hr'
+]
+
+{ #category : #'as yet unclassified' }
+ElucidationBrush >> raw: txt [
+	stream << txt
 ]
 
 { #category : #'html rendering' }

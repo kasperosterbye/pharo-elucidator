@@ -4,7 +4,7 @@ Class {
 	#category : #Elucidator
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluCommentsElucidation >> classCommentsForPackage: aRPackage [
 			
 	^ (aRPackage definedClasses
@@ -13,7 +13,7 @@ EluCommentsElucidation >> classCommentsForPackage: aRPackage [
 		sort: [ :p1 :p2 | p1 value size > p2 value size ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #elucidation }
 EluCommentsElucidation >> elucidatePackage: packageName html: html [
 	"render the commentry for the package onto html"
 
@@ -30,7 +30,7 @@ EluCommentsElucidation >> elucidatePackage: packageName html: html [
 	self renderClassComments: classComments on: html
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluCommentsElucidation >> packageCommentForPackage: aRPackage [
 	aRPackage packageComment 
 		ifEmpty: [ ^'no package comment' ]
