@@ -54,6 +54,16 @@ Elucidation >> findPackage: packageName [
 	^ nil
 ]
 
+{ #category : #'helper methods' }
+Elucidation >> findPackagesWithPrefix: packagePrefix [
+	"find packages based on packagePrefix. Ignore case and implementation class"
+
+	| allNames |
+	allNames := RPackageOrganizer default packageNames select: [:name | (name copyUpTo: $-) sameAs: packagePrefix].
+	^ allNames
+		collect: [  :pName | RPackageOrganizer default packageNamed: pName]
+]
+
 { #category : #elucidation }
 Elucidation >> handle: req on: html [
 	| scope subject |

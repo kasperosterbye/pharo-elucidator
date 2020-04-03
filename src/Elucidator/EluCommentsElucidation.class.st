@@ -20,8 +20,9 @@ EluCommentsElucidation >> elucidatePackage: packageName html: html [
 	| rPack packageComment classComments |
 	rPack := self findPackage: packageName.
 	rPack
-		ifNil: [ html heading: 'No package named: ' , packageName.
+		ifNil: [ html part: 'No package named: ' , packageName.
 			^ self ].
+	html part: 'Comments for ', packageName.
 	packageComment := self packageCommentForPackage: rPack.
 	classComments := self classCommentsForPackage: rPack.
 	packageComment
@@ -42,13 +43,13 @@ EluCommentsElucidation >> packageCommentForPackage: aRPackage [
 EluCommentsElucidation >> renderClassComments: classComments on: html [
 	"classComments is a collection of association, mapping classes to their comments"
 
-	classComments ifNotEmpty: [ html part: 'Class comments' ].
+	classComments ifNotEmpty: [ html heading: 'Class comments' ].
 	classComments
 		do: [ :pair | 
 			pair value
 				ifNotEmpty: [ "do not print empty comments"
 					html
-						heading: [ html classBrowseLink: pair key.
+						section: [ html classBrowseLink: pair key.
 							html htmlStream << pair key name << ' comment:' ];
 						par: pair value ] ]
 ]

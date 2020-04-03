@@ -77,6 +77,11 @@ ElucidationBrush >> heading: title [
 		ifFalse: [ stream tag: 'h3' do: [ stream << title.] ]
 ]
 
+{ #category : #'html rendering' }
+ElucidationBrush >> helpBrowserLink: helpClass [
+	self elucidateLinkTo: 'helpBrowse/' , helpClass name
+]
+
 { #category : #'response transformers' }
 ElucidationBrush >> htmlStream [
 	^ stream

@@ -61,6 +61,15 @@ Elucidator >> browseClassComment: className [
 ]
 
 { #category : #private }
+Elucidator >> browseHelp: className [
+	
+	WorldState defer: [ HelpBrowser openOn: className asClass ].
+	^ ZnResponse new
+		statusLine: ZnStatusLine noContent;
+		yourself
+]
+
+{ #category : #private }
 Elucidator >> browseMethod: selector inClass: className [
 	| cls |
 	cls := (className endsWith: ' class')
@@ -111,9 +120,12 @@ Elucidator >> initialize [
 				-> [ :req | self browseClass: (req at: #className) ];
 		GET:
 			'browseMethod/<className>/<selector>'
-				-> [ :req | self browseMethod: (req at: #selector) inClass: (req at: #className) ];
+				->
+					[ :req | self browseMethod: (req at: #selector) inClass: (req at: #className) ];
 		GET:
-			'/<elucidation>/<scope>/<subject>' -> [ :req | self dispatch: req ];
+			'helpBrowse/<helpClass>'
+				-> [ :req | self browseHelp: (req at: #helpClass) ];
+		GET: '/<elucidation>/<scope>/<subject>' -> [ :req | self dispatch: req ];
 		start
 ]
 

@@ -16,9 +16,9 @@ EluExamplesElucidattion >> elucidatePackage: subject html: html [
 	examples := self findExampleMethods
 		select: [ :meth | meth methodClass package = rPack ].
 	examples
-		ifEmpty: [ html section: 'No examples in package ' , subject.
+		ifEmpty: [ html part: 'No examples in package ' , subject.
 			^ self ].
-	html section: 'Example code'.
+	html part: 'Example code'.
 	" each item is on the form: pharoLink, class>>method, first line of comment if any"
 	html
 		ulist: [ examples
@@ -27,7 +27,7 @@ EluExamplesElucidattion >> elucidatePackage: subject html: html [
 						item: [ html methodBrowseLink: method.
 							html raw: method name.
 							method comments
-								ifNotEmpty: [ :coms | html raw: '. <i>' , coms first lines first, '</i>' ] ] ] ]
+								ifNotEmpty: [ :coms | html raw: '. <i>' , coms first lines first , '</i>' ] ] ] ]
 ]
 
 { #category : #'helper methods' }
