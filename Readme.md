@@ -9,29 +9,41 @@
 > - I don't understand. You'll have to elucidate.  
 > - The reasons for the change in weather conditions have been elucidated by several scientists.
 
-The elucidator is a set of tools which will try to explain and clearify classes and packages of Pharo code.
+The elucidator is a set of tools which will try to explain and clearify projects of Pharo code.
 
 The primary way to get elucidation is the `elucidate` method:
 
-* `aPackage elucidate`
 * `aClass elucidate`
-* `aBlock elucidate`
 * `anObject elucidate`
+* `'Debugger' elucidate`
 
-Each does something slightly different in its attempt to explain the feature.
+### Background
+I have had a hard time to understand what the different aspects of the pharo image do. This tool try to gather a lot of information about a given project. There is no pharo concept of a `project`, but this tool defines it as all the packages which shares a common prefix upto the first $-. It works well in practice for me. 
 
-### Instalation
+The two above methods finds the project of a class or object, and tries to elucidate that project.
+
+## Instalation
 The elucidator loads using this Metacello script:
 
 ```smalltalk
-to be done
+Metacello new
+   baseline: 'Elucidator';
+   repository: 'github://kasperosterbye/pharo-elucidator';
+   load.
 ```
 
 ## Eucidations
-#### Comments
+#### Help
+The pharo image has an (rather outdated) build in help system. This section of the elucidation returns those topics for in that help system if any exist.
 #### Examples
-#### Sequence diagrams
-#### Object diagrams
+It is good custom to give examples on the class side of selected classes. But where are those examples? The elucidator finds them for you. 
+
+Some examples are defined by name, others are indicated by pragmas. The elucidator finds both. 
+#### Comments
+Some packages has comments, some classes has comments. The Elucidator finds all those comments for you. Often you get a good idea of what is going on by skimming over all those comments.
+
+#### Instances
+Sometimes it can be useful to start your investigation by looking at classes which actually has instances in the image. The Elucidator finds the 10 classes in the image within a project with the most instances. 
 
 ## Design considerations
 The design of the elucidator is driven by a few goals and considerations:
@@ -46,6 +58,6 @@ The elucidator presents its information in a webbrowser. The pharo image is set 
 
 The individual elucidation tools seperate the information gathering from rendering, but only in methods. It will require a refactoring of the individual elucidations if one want a different rendering.
 
-Having the information rendered in a webbrowser also accomodates for a developing situation with two screens, elucidation in webbrowser, and no overlap to the image.
+Having the information rendered in a webbrowser also accomodates for a developer with two screens, elucidation in webbrowser, and no overlap of the image.
 
 
