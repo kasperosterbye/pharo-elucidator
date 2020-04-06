@@ -11,7 +11,7 @@ Class {
 		'packages',
 		'projectName'
 	],
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #'instance creation' }

@@ -7,7 +7,7 @@ Class {
 	#classInstVars : [
 		'instance'
 	],
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #'as yet unclassified' }
