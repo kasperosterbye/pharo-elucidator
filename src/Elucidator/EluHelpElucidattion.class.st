@@ -6,14 +6,19 @@ Class {
 
 { #category : #elucidation }
 EluHelpElucidattion >> elucidatePackage: subject html: html [
-	| rootName help |
-	rootName := subject copyUpTo: $-.
+	self elucidateProject: (subject copyUpTo: $-) html: html
+]
+
+{ #category : #elucidation }
+EluHelpElucidattion >> elucidateProject: subject html: html [
+	| project help |
+	project := EluProject fromPackageName: subject.
 	help := CustomHelp allSubclasses
-		select: [ :cl | (cl package name copyUpTo: $-) = rootName ].
+		select: [ :cl | project packages includes: cl package ].
 	help
-		ifEmpty: [ html part: 'No pharo help defined for: ' , subject.
+		ifEmpty: [ html part: 'No pharo help defined for project ' , project name.
 			^ self ].
-	html part: 'System help for ' , rootName .
+	html part: 'System help for ' , project name.
 	help
 		do: [ :helpclass | 
 			| helpTopic |
