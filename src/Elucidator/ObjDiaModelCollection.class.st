@@ -18,6 +18,20 @@ ObjDiaModelCollection >> analyzeAccess [
 		do: [ :elem |  self analyzeElement: elem]
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModelCollection >> analyzeDestinationRange [
+	| count |
+	count := 15.
+	obj
+		do: [ :elem| | destination |
+			destination := model entityFor: elem.
+			destination range: (range - 1 max: destination range).
+			self destinationsAt: 'Index' putEntity: destination.
+			count := count -1.
+			count = 0 ifTrue: [ ^self ].
+			 ]
+]
+
 { #category : #analysis }
 ObjDiaModelCollection >> analyzeElement: elem [
 	( model buildFilter buildCheck: elem)
@@ -28,11 +42,11 @@ ObjDiaModelCollection >> analyzeElement: elem [
 { #category : #accessing }
 ObjDiaModelCollection >> categoryName [
 	sources
-		ifEmpty: [ destinations
-				ifEmpty: [ ^ 'Unclassified' ]
-				ifNotEmpty: [ ^ destinations first destination obj class category ] ]
-		ifNotEmpty:[
-	^ sources first source key obj class category]
+		ifNotEmpty: [ sources first source key obj
+				in: [ :o | 
+					o isCollection
+						ifFalse: [ ^ o class category] ] ].
+	^ nil 
 ]
 
 { #category : #testing }
@@ -85,7 +99,11 @@ ObjDiaModelCollection >> writeRefsOn: out [
 
 { #category : #writing }
 ObjDiaModelCollection >> writeUmlOn: out [
-	out << 'package ' << self categoryName << ' {' ;cr.
-		super writeUmlOn: out.
-		out << '}'; cr
+	self categoryName in: [ :categoryName |  
+		categoryName 
+			ifNil: [super writeUmlOn: out] 
+			ifNotNil: [
+				out << 'package ' << self categoryName << ' {' ;cr.
+				super writeUmlOn: out.
+				out << '}'; cr]]
 ]

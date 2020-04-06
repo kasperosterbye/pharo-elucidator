@@ -24,6 +24,18 @@ ObjDiaModelObject >> analyzeAccessor: accessor [
 		ifTrue: [ self destinationsAt: accessor put: object ].
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModelObject >> analyzeDestinationRange [
+	| accessors  |
+	accessors := obj class
+		in: [ :c | c allSelectors & c allInstVarNames ].
+	accessors
+		do: [ :accessor | | destination |
+			destination := model entityFor: (obj instVarNamed: accessor).
+			destination range: (range - 1 max: destination range).
+			self destinationsAt: accessor putEntity: destination ]
+]
+
 { #category : #accessing }
 ObjDiaModelObject >> categoryName [
 	^ obj class category

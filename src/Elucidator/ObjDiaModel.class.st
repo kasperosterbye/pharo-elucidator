@@ -23,7 +23,12 @@ Class {
 		'presentationFilterBlock',
 		'entities',
 		'refs',
-		'entityCounter'
+		'entityCounter',
+		'id'
+	],
+	#classInstVars : [
+		'modelCounter',
+		'modelCache'
 	],
 	#category : #'Elucidator-ObjectDiagram'
 }
@@ -34,6 +39,39 @@ ObjDiaModel class >> example [
 	(ObjDiaModel  new 
 		buildFilter: [:filter | filter includeCategory: 'Kernel']) 
 		webbrowseDiagramFor:  ({1.  2@4.  3.})->#(2 3).
+]
+
+{ #category : #'as yet unclassified' }
+ObjDiaModel class >> inspectRequest: req [
+	| model entity |
+	model := modelCache at: (req at: #model).
+	entity := model findFromPrintString: (req at: #oid).
+	entity obj inspect.
+	
+	^ ZnResponse new
+        statusLine: ZnStatusLine noContent;        
+        entity: (ZnEntity html: 'It is done!');
+        yourself
+]
+
+{ #category : #accessing }
+ObjDiaModel class >> modelAt: id [
+	(modelCache includesKey: id)
+		ifTrue: [ ^ modelCache at: id ] 
+		ifFalse: [ ^nil ]
+]
+
+{ #category : #'instance creation' }
+ObjDiaModel class >> new [
+	| newModel |
+	newModel := super new.
+	modelCounter ifNil: [ modelCounter := 0 ].
+	modelCounter := modelCounter +1.
+	newModel id: 'objdia', modelCounter  printString.
+	modelCache ifNil: [ modelCache := LRUCache new ].
+	modelCache at: newModel id put: newModel.
+	^ newModel
+	
 ]
 
 { #category : #analysis }
@@ -89,6 +127,22 @@ ObjDiaModel >> entityFor: obj [
 	^newEntity
 ]
 
+{ #category : #accessing }
+ObjDiaModel >> findFromPrintString: printNameNoSpace [
+	^ entities detect: [ :ent | ent printNameNoSpace = printNameNoSpace  ] ifNone: [ nil ]
+		
+]
+
+{ #category : #accessing }
+ObjDiaModel >> id [
+	^id
+]
+
+{ #category : #accessing }
+ObjDiaModel >> id: newId [
+	id := newId
+]
+
 { #category : #public }
 ObjDiaModel >> imageDiagramFor: root [
 	^ PlantUMLBridge imageFromUML: (self umlFor: root)
@@ -134,6 +188,30 @@ ObjDiaModel >> pruneEmptyCollections [
 	emptyCollections do: [ :entity | entity removeFromModel ] 
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModel >> range: range from: root [
+	| unVisited visited safetyCount |
+	unVisited := Set new.
+	visited := Set new.
+	safetyCount := 1000.
+	(self entityFor: root)
+		in: [ :ent | 
+			ent range: range.
+			unVisited add: ent ].
+	[ unVisited notEmpty ]
+		whileTrue: [ | entity |
+			safetyCount := safetyCount -1.
+			safetyCount = 0 ifTrue: [self error: 'Model too large'].
+			entity := unVisited anyOne.
+			unVisited remove: entity.
+			visited add: entity.
+			entity analyzeRange.
+			unVisited
+				addAll:
+					(entity destinationEntities | entity sourceEntities
+						copyWithoutAll: visited) ]
+]
+
 { #category : #analysis }
 ObjDiaModel >> reduceModel [
 	self pruneEmptyCollections.
@@ -163,18 +241,23 @@ ObjDiaModel >> simplifySingletonCollections [
 		do: [ :collEntity | collEntity reduceToSingletonRefs ]
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModel >> uml [
+	^ String new
+		writeStreamDo: [ :out | 
+			self writeHeaderFor: 'Object Diagram' on: out.
+			self writeObjectsOn: out.
+			self writeRefsOn: out.
+			self writeFooterOn: out.
+			out contents ]
+]
+
 { #category : #public }
 ObjDiaModel >> umlFor: root [
-	| out |
 	self analyzeRoot: root.
 	entities ifNil: [ self error: 'model too large' ].
 	self reduceModel.
-	out := String new writeStream.
-	self writeHeaderFor: root on: out.
-	self writeObjectsOn: out.
-	self writeRefsOn: out.
-	self writeFooterOn: out.
-	^ out contents
+	^self uml
 ]
 
 { #category : #accessing }
@@ -191,6 +274,11 @@ ObjDiaModel >> validateModel [
 	refs do: [ :ref |
 		(ref source key destinations includes: ref) ifFalse: [ self error ].
 		(ref destination sources includes: ref) ifFalse: [ self error ] ].
+]
+
+{ #category : #public }
+ObjDiaModel >> webbrowseDiagram [
+	^ PlantUMLBridge webbrowseUML: (self uml) 
 ]
 
 { #category : #public }

@@ -17,7 +17,8 @@ Class {
 		'obj',
 		'model',
 		'entityId',
-		'pseudoObject'
+		'pseudoObject',
+		'range'
 	],
 	#category : #'Elucidator-ObjectDiagram'
 }
@@ -38,9 +39,56 @@ ObjDiaModelEntity >> analyzeAccess [
 	^self subclassResponsibility 
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModelEntity >> analyzeDestinationRange [
+	self subclassResponsibility 
+]
+
+{ #category : #'as yet unclassified' }
+ObjDiaModelEntity >> analyzeRange [
+	"I add sources and destinations to this entity"
+	range <= 0 ifTrue:[^self].
+	"self analyzeSourceRange."
+	self analyzeDestinationRange.
+	
+	
+	
+	
+]
+
+{ #category : #'as yet unclassified' }
+ObjDiaModelEntity >> analyzeSourceRange [
+	| sourceObjects accessors|
+	sourceObjects := obj pointersToExcept: { self. self model entities }.
+	sourceObjects := sourceObjects reject: [ :s | s isKindOf: Context ].
+	sourceObjects := sourceObjects first: (sourceObjects size min: 15).
+	sourceObjects do: [ :object | |sourceEntity|
+		accessors := object class allInstVarNames.
+		accessors ifEmpty: [ "a collection"
+			sourceEntity := model entityFor: object.
+			sourceEntity range: (range-1 max: sourceEntity range).
+			sourceEntity destinationsAt: 'Index' putEntity: self.
+			 ] 
+		ifNotEmpty: [ 
+			accessors 
+				detect: [ :ivName | (object instVarNamed: ivName) = obj ]
+				ifFound: [ :ivName | 
+					sourceEntity := model entityFor: object.
+					sourceEntity range: (range-1 max: sourceEntity range).
+					sourceEntity destinationsAt: ivName putEntity: self.
+					 ]
+			 ]
+		]. 
+]
+
 { #category : #accessing }
 ObjDiaModelEntity >> categoryName [
 	^ self subclassResponsibility 
+]
+
+{ #category : #accessing }
+ObjDiaModelEntity >> destinationEntities [
+	^ destinations  collect: [ :ref | ref destination  ]
 ]
 
 { #category : #accessing }
@@ -71,6 +119,17 @@ ObjDiaModelEntity >> destinationsAt: accessor put: value [
 ]
 
 { #category : #accessing }
+ObjDiaModelEntity >> destinationsAt: accessor putEntity: destination [
+	"add an outgoing ref from me to the entity for value"
+	| ref |
+	ref := ObjDiaModelReference new
+		source: self -> accessor;
+		destination: destination;
+		model: model.
+	model refs add: ref.
+]
+
+{ #category : #accessing }
 ObjDiaModelEntity >> entityId [
 	entityId ifNil:[ entityId := model nextEntityNumber].
 	^ entityId 
@@ -89,6 +148,7 @@ ObjDiaModelEntity >> includeInPseudo: pseudo [
 ObjDiaModelEntity >> initialize [
 	sources := OrderedCollection new.
 	destinations  := OrderedCollection  new.
+	range := 0.
 	
 ]
 
@@ -158,6 +218,16 @@ ObjDiaModelEntity >> pseudoObject: anObject [
 	pseudoObject := anObject
 ]
 
+{ #category : #accessing }
+ObjDiaModelEntity >> range [
+	^ range
+]
+
+{ #category : #accessing }
+ObjDiaModelEntity >> range: anObject [
+	range := anObject
+]
+
 { #category : #removing }
 ObjDiaModelEntity >> removeFromPresentation [
 	"Assumes I need to be removed from the model.
@@ -178,6 +248,11 @@ ObjDiaModelEntity >> sourceEntities [
 	^ sources collect: [ :ref | ref source key ]
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModelEntity >> sourceObjects [
+	^ self destinations collect: [ :ref | ref destination obj ]
+]
+
 { #category : #accessing }
 ObjDiaModelEntity >> sources [
 	^ sources
@@ -188,9 +263,17 @@ ObjDiaModelEntity >> sources: anObject [
 	sources := anObject
 ]
 
+{ #category : #writing }
+ObjDiaModelEntity >> url [
+	^'[[http://localhost:1701/inspect/', 
+			model id, '/', 
+			self printNameNoSpace, 
+			' ', self printName, ']]'
+]
+
 { #category : #accessing }
 ObjDiaModelEntity >> writeUmlOn: out [
-	(out << 'object "' << self printName << '" as ')
+	(out << 'object "' << self url<< '" as ')
 		<< self printNameNoSpace;
 		cr
 ]
