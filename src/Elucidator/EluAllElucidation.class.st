@@ -1,7 +1,7 @@
 Class {
 	#name : #EluAllElucidation,
 	#superclass : #Elucidation,
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #'as yet unclassified' }

@@ -1,7 +1,7 @@
 Class {
 	#name : #EluExamplesElucidattion,
 	#superclass : #Elucidation,
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #'helper methods' }

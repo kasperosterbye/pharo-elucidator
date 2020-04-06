@@ -10,7 +10,7 @@ request is forwarded from the elucidator
 Class {
 	#name : #Elucidation,
 	#superclass : #Object,
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #'as yet unclassified' }

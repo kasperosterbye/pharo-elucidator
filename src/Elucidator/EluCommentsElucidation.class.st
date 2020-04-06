@@ -1,7 +1,7 @@
 Class {
 	#name : #EluCommentsElucidation,
 	#superclass : #Elucidation,
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #'helper methods' }

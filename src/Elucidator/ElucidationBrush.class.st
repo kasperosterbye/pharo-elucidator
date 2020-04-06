@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'stream'
 	],
-	#category : #Elucidator
+	#category : #'Elucidator-Core'
 }
 
 { #category : #accessing }
