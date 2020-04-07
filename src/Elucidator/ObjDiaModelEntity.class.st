@@ -26,9 +26,9 @@ Class {
 { #category : #'instance creation' }
 ObjDiaModelEntity class >> on: obj in: model [
 	| entityClass |
-	entityClass := (obj isCollection
+	entityClass := obj isCollection
 		ifTrue: [ ObjDiaModelCollection ]
-		ifFalse: [ ObjDiaModelObject ]).
+		ifFalse: [ ObjDiaModelObject ].
 	^ entityClass new
 		obj: obj;
 		model: model
@@ -172,6 +172,11 @@ ObjDiaModelEntity >> model: anObject [
 	model := anObject
 ]
 
+{ #category : #testing }
+ObjDiaModelEntity >> modelsCollection [
+	self subclassResponsibility 
+]
+
 { #category : #accessing }
 ObjDiaModelEntity >> obj [
 	^ obj
@@ -264,10 +269,8 @@ ObjDiaModelEntity >> sources: anObject [
 
 { #category : #writing }
 ObjDiaModelEntity >> url [
-	^'[[http://localhost:1701/inspect/', 
-			model id, '/', 
-			self printNameNoSpace, 
-			' ', self printName, ']]'
+	^ '[[http://localhost:20203/inspect/' , model id , '/'
+		, self printNameNoSpace , ' ' , self printName , ']]'
 ]
 
 { #category : #accessing }

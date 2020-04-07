@@ -18,6 +18,11 @@ Class {
 	#category : #'Elucidator-ObjectDiagram'
 }
 
+{ #category : #'instance creation' }
+ObjDiaFilter class >> new [
+	self halt: 'filter algorithm'.
+]
+
 { #category : #checking }
 ObjDiaFilter >> buildCheck: anObject [
 	| objClass |

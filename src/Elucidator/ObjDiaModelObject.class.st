@@ -11,6 +11,7 @@ Class {
 { #category : #analysis }
 ObjDiaModelObject >> analyzeAccess [
 	| accessors |
+	self halt: 'filter algorithm'.
 	accessors := obj class
 		in: [ :c | c allSelectors & c allInstVarNames ].
 	accessors do: [ :accessor | self analyzeAccessor: accessor ]
@@ -19,15 +20,17 @@ ObjDiaModelObject >> analyzeAccess [
 { #category : #analysis }
 ObjDiaModelObject >> analyzeAccessor: accessor [
 	| object |
+	self halt: 'filter algorithm'.
 	object := obj instVarNamed: accessor.
 	(model buildFilter buildCheck: object)
-		ifTrue: [ self destinationsAt: accessor put: object ].
+		ifTrue: [ self destinationsAt: accessor put: object ]
 ]
 
 { #category : #'as yet unclassified' }
 ObjDiaModelObject >> analyzeDestinationRange [
 	| accessors |
-	obj isClass ifTrue: [ ^self ].
+	obj isClass
+		ifTrue: [ ^ self ].
 	accessors := obj class
 		in: [ :c | c allSelectors & c allInstVarNames ].
 	accessors
@@ -41,6 +44,11 @@ ObjDiaModelObject >> analyzeDestinationRange [
 { #category : #accessing }
 ObjDiaModelObject >> categoryName [
 	^ obj class category
+]
+
+{ #category : #testing }
+ObjDiaModelObject >> modelsCollection [
+	^ false
 ]
 
 { #category : #writing }

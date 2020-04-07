@@ -11,11 +11,11 @@ Class {
 { #category : #analysis }
 ObjDiaModelCollection >> analyzeAccess [
 	"analyze the elements in my objects collection. Special case - do not analyze inside strings!"
-	
+
+	self halt: 'filter algorithm'.
 	obj isString | obj isText
 		ifTrue: [ ^ self ].
-	obj
-		do: [ :elem |  self analyzeElement: elem]
+	obj do: [ :elem | self analyzeElement: elem ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -37,9 +37,9 @@ ObjDiaModelCollection >> analyzeDestinationRange [
 
 { #category : #analysis }
 ObjDiaModelCollection >> analyzeElement: elem [
-	( model buildFilter buildCheck: elem)
-		ifTrue: [ self destinationsAt: 'Index' put: elem ].
-	
+	self halt: 'filter algorithm'.
+	(model buildFilter buildCheck: elem)
+		ifTrue: [ self destinationsAt: 'Index' put: elem ]
 ]
 
 { #category : #accessing }
@@ -53,13 +53,13 @@ ObjDiaModelCollection >> categoryName [
 ]
 
 { #category : #testing }
-ObjDiaModelCollection >> isCollection [ 
-	^true
+ObjDiaModelCollection >> isPartOfPresentation [
+	^ self sourceEntities allSatisfy: [ :ent | ent isPartOfPresentation  ]
 ]
 
 { #category : #testing }
-ObjDiaModelCollection >> isPartOfPresentation [
-	^ self sourceEntities allSatisfy: [ :ent | ent isPartOfPresentation  ]
+ObjDiaModelCollection >> modelsCollection [
+	^ true
 ]
 
 { #category : #analysis }

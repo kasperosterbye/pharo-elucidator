@@ -15,6 +15,11 @@ Elucidator class >> elucidatePackage: packageName [
 	self instance openBrowserOnPackage: packageName
 ]
 
+{ #category : #'class initialization' }
+Elucidator class >> initialize [
+	self newInstance 
+]
+
 { #category : #accessing }
 Elucidator class >> instance [
 	instance ifNil: [ instance := self basicNew initialize ].
@@ -112,6 +117,8 @@ Elucidator >> indexHTML: req [
 Elucidator >> initialize [
 	teapot := Teapot configure: {(#port -> self socketNumber)}.
 	teapot
+		GET: 'objdiagram/<class>/<range>' -> [ :req | ObjDiaModel diagramRequest: req ];
+		GET: 'inspect/<model>/<oid>' -> [ :req | ObjDiaModel inspectRequest: req ];
 		GET:
 			'browseClassComment/<className>'
 				-> [ :req | self browseClassComment: (req at: #className) ];

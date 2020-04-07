@@ -24,7 +24,8 @@ Class {
 		'entities',
 		'refs',
 		'entityCounter',
-		'id'
+		'id',
+		'diagramName'
 	],
 	#classInstVars : [
 		'modelCounter',
@@ -32,6 +33,19 @@ Class {
 	],
 	#category : #'Elucidator-ObjectDiagram'
 }
+
+{ #category : #'as yet unclassified' }
+ObjDiaModel class >> diagramRequest: req [
+	| theClass range obj |
+	theClass := (req at: #class) asClass.
+	range := (req at: #range) asNumber.
+	obj := theClass allInstances in: [:col | col at: (Random new nextInt: col size)].
+	(self new range: range from: obj) webbrowseDiagram.
+	^ ZnResponse new
+		statusLine: ZnStatusLine noContent;
+		entity: (ZnEntity html: 'It is done!');
+		yourself
+]
 
 { #category : #examples }
 ObjDiaModel class >> example [
@@ -51,12 +65,13 @@ ObjDiaModel class >> inspectRequest: req [
 	| model entity |
 	model := modelCache at: (req at: #model).
 	entity := model findFromPrintString: (req at: #oid).
-	entity obj inspect.
-	
+	WorldState defer: [entity obj isClass
+		ifTrue: [ entity obj browse ]
+		ifFalse: [ entity obj inspect ]].
 	^ ZnResponse new
-        statusLine: ZnStatusLine noContent;        
-        entity: (ZnEntity html: 'It is done!');
-        yourself
+		statusLine: ZnStatusLine noContent;
+		entity: (ZnEntity html: 'It is done!');
+		yourself
 ]
 
 { #category : #accessing }
@@ -82,6 +97,7 @@ ObjDiaModel class >> new [
 { #category : #analysis }
 ObjDiaModel >> analyzeRoot: root [
 	| unVisited visited rootCat safetyCount |
+	self halt: 'filter algorithm'.
 	unVisited := Set new.
 	unVisited add: root.
 	visited := Set new.
@@ -95,21 +111,24 @@ ObjDiaModel >> analyzeRoot: root [
 			obj := unVisited anyOne.
 			unVisited remove: obj.
 			(visited includes: obj)
-				ifFalse: [ entity := self entityFor: obj. 
+				ifFalse: [ entity := self entityFor: obj.
 					entities at: obj put: entity.
 					entity analyzeAccess.
 					visited add: obj.
-					unVisited addAll: (entity destinationObjects copyWithoutAll: visited)] ]
+					unVisited
+						addAll: (entity destinationObjects copyWithoutAll: visited) ] ]
 ]
 
 { #category : #accessing }
 ObjDiaModel >> buildFilter [
+	self halt: 'filter algorithm'.
 	^ buildFilter
 ]
 
 { #category : #accessing }
 ObjDiaModel >> buildFilter: initializationBlock [
-	initializationBlock value: buildFilter 
+	self halt: 'filter algorithm'.
+	initializationBlock value: buildFilter
 ]
 
 { #category : #accessing }
@@ -157,8 +176,8 @@ ObjDiaModel >> imageDiagramFor: root [
 ObjDiaModel >> initialize [
 	entities := Dictionary new.
 	refs := OrderedCollection new.
-	buildFilter := ObjDiaFilter new.
-	entityCounter := 0.
+	buildFilter := nil.
+	entityCounter := 0
 ]
 
 { #category : #accessing }
@@ -174,10 +193,12 @@ ObjDiaModel >> preparePresentation [
 
 { #category : #accessing }
 ObjDiaModel >> presentationFilter [
-	presentationFilter ifNil: [ 
-		presentationFilter := buildFilter copy.
-		presentationFilterBlock ifNotNil: [:b | b value: presentationFilter  ]].
-	^presentationFilter 
+self halt: 'filter algorithm'.
+	presentationFilter
+		ifNil: [ presentationFilter := buildFilter copy.
+			presentationFilterBlock
+				ifNotNil: [ :b | b value: presentationFilter ] ].
+	^ presentationFilter
 ]
 
 { #category : #accessing }
@@ -193,9 +214,10 @@ ObjDiaModel >> pruneEmptyCollections [
 	emptyCollections do: [ :entity | entity removeFromModel ] 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 ObjDiaModel >> range: range from: root [
 	| unVisited visited safetyCount |
+	diagramName := 'Object diagram for ' , root class name , ' instance'.
 	unVisited := Set new.
 	visited := Set new.
 	safetyCount := 1000.
@@ -205,8 +227,9 @@ ObjDiaModel >> range: range from: root [
 			unVisited add: ent ].
 	[ unVisited notEmpty ]
 		whileTrue: [ | entity |
-			safetyCount := safetyCount -1.
-			safetyCount = 0 ifTrue: [self error: 'Model too large'].
+			safetyCount := safetyCount - 1.
+			safetyCount = 0
+				ifTrue: [ self error: 'Model too large' ].
 			entity := unVisited anyOne.
 			unVisited remove: entity.
 			visited add: entity.
@@ -246,11 +269,11 @@ ObjDiaModel >> simplifySingletonCollections [
 		do: [ :collEntity | collEntity reduceToSingletonRefs ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'uml writing' }
 ObjDiaModel >> uml [
 	^ String new
 		writeStreamDo: [ :out | 
-			self writeHeaderFor: 'Object Diagram' on: out.
+			self writeHeaderFor: diagramName  on: out.
 			self writeObjectsOn: out.
 			self writeRefsOn: out.
 			self writeFooterOn: out.
