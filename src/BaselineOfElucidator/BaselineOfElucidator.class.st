@@ -14,5 +14,7 @@ BaselineOfElucidator >> baseline: spec [
 					with: [ spec
 						repository: 'github://zeroflag/Teapot/source';
 						loads: #('Deployment') ];
+					baseline: 'PlantUMLBridge'
+					with: [ spec repository: 'github://kasperosterbye/PlantUMLBridge' ];
 				package: 'Elucidator' ]
 ]

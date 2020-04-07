@@ -42,7 +42,7 @@ EluInstanceElucidattion >> elucidateProject: subject html: html [
 	ifTrue:[ html par: 'More instantiated classes might exist, only showing the top 10' ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluInstanceElucidattion >> topTenInstanceClassesInProject: project [
 	"return an ordered collection of class -> number of instances in the project
 	return only the first 10 sorted by number of instances
