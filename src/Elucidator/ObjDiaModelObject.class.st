@@ -74,7 +74,11 @@ ObjDiaModelObject >> writeRefsOn: out [
 
 { #category : #writing }
 ObjDiaModelObject >> writeUmlOn: out [
-	out << 'package ' << self categoryName << ' {' ;cr.
-		super writeUmlOn: out.
-		out << '}'; cr
+	(out << 'package ' << self categoryHtmlLink)
+		<< ' {';
+		cr.
+	super writeUmlOn: out.
+	out
+		<< '}';
+		cr
 ]

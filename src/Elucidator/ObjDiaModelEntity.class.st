@@ -80,6 +80,14 @@ ObjDiaModelEntity >> analyzeSourceRange [
 		]. 
 ]
 
+{ #category : #'as yet unclassified' }
+ObjDiaModelEntity >> categoryHtmlLink [
+	| categoryName |
+	categoryName := self categoryName.
+	^ '"[[http://localhost:20203/all/package/' , categoryName , ' '
+		, categoryName , ']]"'
+]
+
 { #category : #accessing }
 ObjDiaModelEntity >> categoryName [
 	^ self subclassResponsibility 

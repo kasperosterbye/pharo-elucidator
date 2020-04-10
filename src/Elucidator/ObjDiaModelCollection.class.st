@@ -48,8 +48,8 @@ ObjDiaModelCollection >> categoryName [
 		ifNotEmpty: [ sources first source key obj
 				in: [ :o | 
 					o isCollection
-						ifFalse: [ ^ o class category] ] ].
-	^ nil 
+						ifFalse: [ ^ o class category ] ] ].
+	^ nil
 ]
 
 { #category : #testing }
@@ -109,11 +109,15 @@ ObjDiaModelCollection >> writeRefsOn: out [
 
 { #category : #writing }
 ObjDiaModelCollection >> writeUmlOn: out [
-	self categoryName in: [ :categoryName |  
-		categoryName 
-			ifNil: [super writeUmlOn: out] 
-			ifNotNil: [
-				out << 'package ' << self categoryName << ' {' ;cr.
-				super writeUmlOn: out.
-				out << '}'; cr]]
+	self categoryName
+		in: [ :categoryName | 
+			categoryName
+				ifNil: [ super writeUmlOn: out ]
+				ifNotNil: [ (out << 'package ' << self categoryHtmlLink )
+						<< ' {';
+						cr.
+					super writeUmlOn: out.
+					out
+						<< '}';
+						cr ] ]
 ]
