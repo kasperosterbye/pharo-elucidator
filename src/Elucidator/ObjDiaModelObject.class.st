@@ -8,24 +8,6 @@ Class {
 	#category : #'Elucidator-ObjectDiagram'
 }
 
-{ #category : #analysis }
-ObjDiaModelObject >> analyzeAccess [
-	| accessors |
-	self halt: 'filter algorithm'.
-	accessors := obj class
-		in: [ :c | c allSelectors & c allInstVarNames ].
-	accessors do: [ :accessor | self analyzeAccessor: accessor ]
-]
-
-{ #category : #analysis }
-ObjDiaModelObject >> analyzeAccessor: accessor [
-	| object |
-	self halt: 'filter algorithm'.
-	object := obj instVarNamed: accessor.
-	(model buildFilter buildCheck: object)
-		ifTrue: [ self destinationsAt: accessor put: object ]
-]
-
 { #category : #'as yet unclassified' }
 ObjDiaModelObject >> analyzeDestinationRange [
 	| accessors |

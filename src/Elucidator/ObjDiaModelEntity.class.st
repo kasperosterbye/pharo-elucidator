@@ -34,11 +34,6 @@ ObjDiaModelEntity class >> on: obj in: model [
 		model: model
 ]
 
-{ #category : #analysis }
-ObjDiaModelEntity >> analyzeAccess [ 
-	^self subclassResponsibility 
-]
-
 { #category : #'as yet unclassified' }
 ObjDiaModelEntity >> analyzeDestinationRange [
 	self subclassResponsibility 

@@ -18,9 +18,6 @@ Class {
 	#name : #ObjDiaModel,
 	#superclass : #Object,
 	#instVars : [
-		'buildFilter',
-		'presentationFilter',
-		'presentationFilterBlock',
 		'entities',
 		'refs',
 		'entityCounter',
@@ -94,43 +91,6 @@ ObjDiaModel class >> new [
 	
 ]
 
-{ #category : #analysis }
-ObjDiaModel >> analyzeRoot: root [
-	| unVisited visited rootCat safetyCount |
-	self halt: 'filter algorithm'.
-	unVisited := Set new.
-	unVisited add: root.
-	visited := Set new.
-	rootCat := root class category copyUpToLast: $-.
-	buildFilter includeCategory: rootCat.
-	safetyCount := 10000.	"to prevent too large an investigation"
-	[ unVisited notEmpty ]
-		whileTrue: [ | obj entity |
-			(safetyCount := safetyCount - 1) < 0
-				ifTrue: [ ^ nil ].
-			obj := unVisited anyOne.
-			unVisited remove: obj.
-			(visited includes: obj)
-				ifFalse: [ entity := self entityFor: obj.
-					entities at: obj put: entity.
-					entity analyzeAccess.
-					visited add: obj.
-					unVisited
-						addAll: (entity destinationObjects copyWithoutAll: visited) ] ]
-]
-
-{ #category : #accessing }
-ObjDiaModel >> buildFilter [
-	self halt: 'filter algorithm'.
-	^ buildFilter
-]
-
-{ #category : #accessing }
-ObjDiaModel >> buildFilter: initializationBlock [
-	self halt: 'filter algorithm'.
-	initializationBlock value: buildFilter
-]
-
 { #category : #accessing }
 ObjDiaModel >> entities [
 	^ entities
@@ -176,7 +136,6 @@ ObjDiaModel >> imageDiagramFor: root [
 ObjDiaModel >> initialize [
 	entities := Dictionary new.
 	refs := OrderedCollection new.
-	buildFilter := nil.
 	entityCounter := 0
 ]
 
@@ -189,21 +148,6 @@ ObjDiaModel >> nextEntityNumber [
 { #category : #analysis }
 ObjDiaModel >> preparePresentation [ 
 	entities values do: [ :entity | entity preparePresentation ]
-]
-
-{ #category : #accessing }
-ObjDiaModel >> presentationFilter [
-self halt: 'filter algorithm'.
-	presentationFilter
-		ifNil: [ presentationFilter := buildFilter copy.
-			presentationFilterBlock
-				ifNotNil: [ :b | b value: presentationFilter ] ].
-	^ presentationFilter
-]
-
-{ #category : #accessing }
-ObjDiaModel >> presentationFilter: initializationBlock [
-	presentationFilterBlock := initializationBlock 
 ]
 
 { #category : #analysis }

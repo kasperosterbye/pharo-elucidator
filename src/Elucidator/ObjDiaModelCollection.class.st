@@ -8,16 +8,6 @@ Class {
 	#category : #'Elucidator-ObjectDiagram'
 }
 
-{ #category : #analysis }
-ObjDiaModelCollection >> analyzeAccess [
-	"analyze the elements in my objects collection. Special case - do not analyze inside strings!"
-
-	self halt: 'filter algorithm'.
-	obj isString | obj isText
-		ifTrue: [ ^ self ].
-	obj do: [ :elem | self analyzeElement: elem ]
-]
-
 { #category : #'as yet unclassified' }
 ObjDiaModelCollection >> analyzeDestinationRange [
 	| count |
@@ -33,13 +23,6 @@ ObjDiaModelCollection >> analyzeDestinationRange [
 			count := count - 1.
 			count = 0
 				ifTrue: [ ^ self ] ]
-]
-
-{ #category : #analysis }
-ObjDiaModelCollection >> analyzeElement: elem [
-	self halt: 'filter algorithm'.
-	(model buildFilter buildCheck: elem)
-		ifTrue: [ self destinationsAt: 'Index' put: elem ]
 ]
 
 { #category : #accessing }
