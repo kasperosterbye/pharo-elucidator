@@ -96,11 +96,30 @@ EluSeqDiagram >> needToTruncate [
 ]
 
 { #category : #private }
-EluSeqDiagram >> normalized: aClass [ 
-	^(packageFilter  isEmpty or: [packageFilter anySatisfy: [ :pn | pn isEmpty or: [aClass category beginsWith: pn]]])
-		ifTrue: [ aClass name asString copyReplaceAll: ' ' with: '_'] 
-		ifFalse: [ ^ self catchAllName  ]
-	
+EluSeqDiagram >> normalized: aClass [
+	^ (packageFilter isEmpty
+		or: [ packageFilter
+				anySatisfy: [ :pn | pn isEmpty or: [ aClass category beginsWith: pn ] ] ])
+		ifTrue: [ '"[[http://localhost:20203/browseClass/'
+				, (aClass name asString copyReplaceAll: ' ' with: '_') , ' '
+				, aClass name asString , ']]" ' ]
+		ifFalse: [ ^ self catchAllName ]
+]
+
+{ #category : #private }
+EluSeqDiagram >> oldnormalized: aClass [
+	^ (packageFilter isEmpty
+		or: [ packageFilter
+				anySatisfy: [ :pn | pn isEmpty or: [ aClass category beginsWith: pn ] ] ])
+		ifTrue: [ aClass name asString copyReplaceAll: ' ' with: '_' ]
+		ifFalse: [ ^ self catchAllName ]
+]
+
+{ #category : #'as yet unclassified' }
+EluSeqDiagram >> selectorLink: selector class: receiverClass [
+	^ '[[http://localhost:20203/browseMethod/'
+		, (receiverClass name asString copyReplaceAll: ' ' with: '_') , '/'
+		, selector , ' ' , selector , ']]'
 ]
 
 { #category : #accessing }
@@ -180,8 +199,7 @@ EluSeqDiagram >> visit: sender to: tally [
 	If max size is reached, I truncate the diagram."
 
 	| senderName receiverName selector arrow out |
-	self needToTruncate 
-		ifNotEmpty: [ :str | ^str ].
+	self needToTruncate ifNotEmpty: [ :str | ^ str ].
 	senderName := self normalized: sender theClass.
 	receiverName := self normalized: tally theClass.
 	selector := tally method selector.
@@ -194,7 +212,7 @@ EluSeqDiagram >> visit: sender to: tally [
 				ifTrue: [ savedSenders ifNotEmpty: [ senderName := savedSenders removeLast ].
 					selector := '...' ,+ selector ].
 			out := out ,+ senderName ,+ arrow ,+ receiverName ,+ ': '
-				,+ selector ,+ String cr ]
+				,+ (self selectorLink: selector class: tally theClass) ,+ String cr ]
 		ifTrue: [ senderName = self catchAllName
 				ifFalse: [ savedSenders addLast: senderName ] ].
 	^ out ,+ (self visit: tally)

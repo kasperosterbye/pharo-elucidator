@@ -89,6 +89,8 @@ Elucidator >> browseClass: className [
 	cls := (className endsWith: ' class')
 		ifTrue: [ (className copyReplaceAll: ' class' with: '') asClass class ]
 		ifFalse: [ className asClass ].
+	(className endsWith: '_class')
+		ifTrue: [ cls := (className copyReplaceAll: '_class' with: '') asClass class ].
 	WorldState defer: [ cls browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
@@ -121,7 +123,7 @@ Elucidator >> browseMethod: selector inClass: className [
 	cls := (className endsWith: ' class')
 		ifTrue: [ (className copyReplaceAll: ' class' with: '') asClass class ]
 		ifFalse: [ className asClass ].
-	WorldState defer: [ (cls >> selector asSymbol) browse ].
+	WorldState defer: [ (cls lookupSelector: selector asSymbol) browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself
