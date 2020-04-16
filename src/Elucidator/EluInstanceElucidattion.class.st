@@ -5,6 +5,20 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+EluInstanceElucidattion >> diagramLinks: number for: aClass html: html [
+	"Create links to object diagrams for a instance of aClass. make links for range 1 through 5"
+
+	"create links of the form 'objdiagram/<class>/<range>'"
+
+	html raw: ' Diagrams for random instance. Diagram range: '.
+	1 to: (5 min: number) do: [ :range | 
+		html
+			elucidateLink: range printString
+				to: 'objdiagram/' , aClass name , '/' , range printString;
+			raw: ' ' ]
+]
+
+{ #category : #'as yet unclassified' }
 EluInstanceElucidattion >> diagramLinksFor: aClass html: html [
 	"Create links to object diagrams for a instance of aClass. make links for range 1 through 5"
 
@@ -40,8 +54,7 @@ EluInstanceElucidattion >> elucidateProject: subject html: html [
 	| top10 project |
 	project := EluProject fromPackageName: subject.
 	top10 := self topTenInstanceClassesInProject: project.
-	top10 first value = 0
-		ifTrue: [ html
+	top10 ifEmpty: [ html
 				part: 'No instances of any class in project ' , (self projectName: subject).
 			^ self ].
 	html part: 'Instances of classes in ' , project name.
@@ -51,7 +64,7 @@ EluInstanceElucidattion >> elucidateProject: subject html: html [
 					html
 						item: [ html classBrowseLink: assoc key.
 							html
-								raw: assoc key name , ' instances: ' , assoc value printString, '. '.
+								raw: assoc key name , ' instances: ' , assoc value printString , '. '.
 							self diagramLinksFor: assoc key html: html ] ] ].
 	top10 size = 10
 		ifTrue: [ html

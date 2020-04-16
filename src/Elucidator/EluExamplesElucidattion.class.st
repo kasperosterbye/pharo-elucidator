@@ -9,6 +9,17 @@ EluExamplesElucidattion >> allClasses [
 	^ Object allSubclasses 
 ]
 
+{ #category : #'as yet unclassified' }
+EluExamplesElucidattion >> diagramLinksFor: aClass example: example html: html [
+	"Create links to sequence diagram of running the example"
+
+	"create links of the form 'seqdiagram/<class>/<example>'"
+
+	html
+		elucidateLink: ' Sequence Diagram for example'
+		to: 'seqdiagram/' , aClass name , '/' , example selector
+]
+
 { #category : #elucidation }
 EluExamplesElucidattion >> elucidatePackage: subject html: html [
 	| rPack examples |
@@ -40,7 +51,7 @@ EluExamplesElucidattion >> elucidateProject: subject html: html [
 	examples
 		ifEmpty: [ html part: 'No examples in project ' , proj name.
 			^ self ].
-	html part: 'Example code for ', proj name.
+	html part: 'Example code for ' , proj name.
 	" each item is on the form: pharoLink, class>>method, first line of comment if any"
 	html
 		ulist: [ examples
@@ -48,8 +59,9 @@ EluExamplesElucidattion >> elucidateProject: subject html: html [
 					html
 						item: [ html methodBrowseLink: method.
 							html raw: method name.
-							method comments
-								ifNotEmpty: [ :coms | html raw: '. <i>' , coms first lines first , '</i>' ] ] ] ]
+							(method selector isUnary and: [ method methodClass isMeta ])
+								ifTrue:
+									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
 ]
 
 { #category : #'helper methods' }

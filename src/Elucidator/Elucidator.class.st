@@ -45,8 +45,8 @@ Elucidator >> about [
 { #category : #private }
 Elucidator >> browseClass: className [
 	| cls |
-	cls := (className endsWith: '%20class')
-		ifTrue: [ (className copyReplaceAll: '%20class' with: '') asClass class]
+	cls := (className endsWith: ' class')
+		ifTrue: [ (className copyReplaceAll: ' class' with: '') asClass class ]
 		ifFalse: [ className asClass ].
 	WorldState defer: [ cls browse ].
 	^ ZnResponse new
@@ -117,7 +117,12 @@ Elucidator >> indexHTML: req [
 Elucidator >> initialize [
 	teapot := Teapot configure: {(#port -> self socketNumber)}.
 	teapot
-		GET: 'objdiagram/<class>/<range>' -> [ :req | ObjDiaModel diagramRequest: req ];
+		GET:
+			'seqdiagram/<class>/<example>'
+				-> [ :req | EluSeqDiagram  diagramRequest: req ];
+		GET:
+			'objdiagram/<class>/<range>'
+				-> [ :req | ObjDiaModel diagramRequest: req ];
 		GET: 'inspect/<model>/<oid>' -> [ :req | ObjDiaModel inspectRequest: req ];
 		GET:
 			'browseClassComment/<className>'
