@@ -25,16 +25,6 @@ ObjDiaModelCollection >> analyzeDestinationRange [
 				ifTrue: [ ^ self ] ]
 ]
 
-{ #category : #accessing }
-ObjDiaModelCollection >> categoryName [
-	sources
-		ifNotEmpty: [ sources first source key obj
-				in: [ :o | 
-					o isCollection
-						ifFalse: [ ^ o class category ] ] ].
-	^ nil
-]
-
 { #category : #testing }
 ObjDiaModelCollection >> isPartOfPresentation [
 	^ self sourceEntities allSatisfy: [ :ent | ent isPartOfPresentation  ]
@@ -43,6 +33,16 @@ ObjDiaModelCollection >> isPartOfPresentation [
 { #category : #testing }
 ObjDiaModelCollection >> modelsCollection [
 	^ true
+]
+
+{ #category : #accessing }
+ObjDiaModelCollection >> packageName [
+	sources
+		ifNotEmpty: [ sources first source key obj
+				in: [ :o | 
+					o isCollection
+						ifFalse: [ ^ o class package name ] ] ].
+	^ nil
 ]
 
 { #category : #analysis }
@@ -92,11 +92,11 @@ ObjDiaModelCollection >> writeRefsOn: out [
 
 { #category : #writing }
 ObjDiaModelCollection >> writeUmlOn: out [
-	self categoryName
-		in: [ :categoryName | 
-			categoryName
+	self packageName
+		in: [ :packageName | 
+			packageName
 				ifNil: [ super writeUmlOn: out ]
-				ifNotNil: [ (out << 'package ' << self categoryHtmlLink )
+				ifNotNil: [ (out << 'package ' << self packageHtmlLink)
 						<< ' {';
 						cr.
 					super writeUmlOn: out.

@@ -75,19 +75,6 @@ ObjDiaModelEntity >> analyzeSourceRange [
 		]. 
 ]
 
-{ #category : #'as yet unclassified' }
-ObjDiaModelEntity >> categoryHtmlLink [
-	| categoryName |
-	categoryName := self categoryName.
-	^ '"[[http://localhost:20203/all/package/' , categoryName , ' '
-		, categoryName , ']]"'
-]
-
-{ #category : #accessing }
-ObjDiaModelEntity >> categoryName [
-	^ self subclassResponsibility 
-]
-
 { #category : #accessing }
 ObjDiaModelEntity >> destinationEntities [
 	^ destinations  collect: [ :ref | ref destination  ]
@@ -188,6 +175,19 @@ ObjDiaModelEntity >> obj [
 { #category : #accessing }
 ObjDiaModelEntity >> obj: anObject [
 	obj := anObject
+]
+
+{ #category : #'as yet unclassified' }
+ObjDiaModelEntity >> packageHtmlLink [
+	| packageName |
+	packageName := self packageName.
+	^ '"[[http://localhost:20203/all/package/' , packageName , ' '
+		, packageName , ']]"'
+]
+
+{ #category : #accessing }
+ObjDiaModelEntity >> packageName [
+	^ self subclassResponsibility
 ]
 
 { #category : #analysis }

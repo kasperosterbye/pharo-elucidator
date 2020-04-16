@@ -33,6 +33,11 @@ ObjDiaModelObject >> modelsCollection [
 	^ false
 ]
 
+{ #category : #accessing }
+ObjDiaModelObject >> packageName [
+	^ obj class package name
+]
+
 { #category : #writing }
 ObjDiaModelObject >> printName [
 	obj isNumber
@@ -56,7 +61,7 @@ ObjDiaModelObject >> writeRefsOn: out [
 
 { #category : #writing }
 ObjDiaModelObject >> writeUmlOn: out [
-	(out << 'package ' << self categoryHtmlLink)
+	(out << 'package ' << self packageHtmlLink)
 		<< ' {';
 		cr.
 	super writeUmlOn: out.

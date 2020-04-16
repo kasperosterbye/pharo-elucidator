@@ -17,11 +17,6 @@ Class {
 	#category : #'Elucidator-ObjectDiagram'
 }
 
-{ #category : #accessing }
-ObjDiaModelPseudoObject >> categoryName [
-	^ 'Stuff'
-]
-
 { #category : #initialization }
 ObjDiaModelPseudoObject >> closeReachOf: entity [
 	"I am the main closure loop of the presentation filter"
@@ -43,6 +38,11 @@ ObjDiaModelPseudoObject >> initialize [
 { #category : #testing }
 ObjDiaModelPseudoObject >> isPartOfPresentation [
 	^true
+]
+
+{ #category : #accessing }
+ObjDiaModelPseudoObject >> packageName [
+	^ 'Stuff'
 ]
 
 { #category : #printing }
