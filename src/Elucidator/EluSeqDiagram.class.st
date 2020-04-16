@@ -84,6 +84,18 @@ EluSeqDiagram >> initialize [
 ]
 
 { #category : #private }
+EluSeqDiagram >> needToTruncate [
+	"I truncate the diagram if it grows too big. Utility method to make #visit:to: shorter"
+
+	maxSize := maxSize - 1.
+	maxSize = 0
+		ifTrue: [ ^ String cr ,+ '== diagram truncated from here ==' ,+ String cr ].
+	maxSize <= 0
+		ifTrue: [ ^ ' ' ].
+	^''
+]
+
+{ #category : #private }
 EluSeqDiagram >> normalized: aClass [ 
 	^(packageFilter  isEmpty or: [packageFilter anySatisfy: [ :pn | pn isEmpty or: [aClass category beginsWith: pn]]])
 		ifTrue: [ aClass name asString copyReplaceAll: ' ' with: '_'] 
@@ -118,32 +130,35 @@ EluSeqDiagram >> uml: packages [
 
 { #category : #'uml writing' }
 EluSeqDiagram >> uml: packages skipSelectors: selectors [
-	| outStream |
+	| out |
 	packageFilter := packages.
 	skipSelectors := selectors , #(tallyFor:).
-	outStream := '' writeStream.
-	outStream
+	out := '' writeStream.
+	out
 		<< '@startuml';
 		cr.
-	outStream
+	out
 		<<
 			'skinparam shadowing false
 skinparam sequence {
 ParticipantFontSize 12
 }';
 		cr.
-	(outStream << '-> ' << (self normalized: theTally theClass) << ': ')
+	(out << '-> ' << (self normalized: theTally theClass) << ': ')
 		<< theTally method selector;
 		cr.
-	outStream << (self visit: theTally).
-	outStream
+	out << (self visit: theTally).
+	out
 		<< '@enduml';
 		cr.
-	^ outStream contents
+	^ out contents
 ]
 
 { #category : #'uml writing' }
 EluSeqDiagram >> visit: aTally [
+	"I write the activation coresponding to aTally. 
+	I write the box, the #visit:to: writes each call."
+
 	| senderName receivers receiversText |
 	senderName := self normalized: aTally theClass.
 	receivers := aTally receivers
@@ -152,35 +167,35 @@ EluSeqDiagram >> visit: aTally [
 		collect: [ :rec | self visit: aTally to: rec ]) joinUsing: ''.
 	receiversText
 		ifNotEmpty: [ senderName = self catchAllName
-				ifFalse: [ ^ 'Activate ' , senderName , String cr , receiversText
-						, 'Deactivate ' , senderName , String cr
+				ifFalse: [ ^ 'Activate ' ,+ senderName ,+ String cr ,+ receiversText
+						,+ 'Deactivate ' ,+ senderName ,+ String cr
 					"'return return ', aTally method selector, String cr" ]
 				ifTrue: [ ^ receiversText ] ].
 	^ ''
 ]
 
 { #category : #'uml writing' }
-EluSeqDiagram >> visit: sender to: aTally [
-	| senderName receiverName selector out arrow |
-	maxSize := maxSize - 1.
-	maxSize = 0
-		ifTrue: [ ^ String cr , '== diagram truncated from here ==' , String cr ].
-	maxSize < 0
-		ifTrue: [ ^ '' ].
+EluSeqDiagram >> visit: sender to: tally [
+	"I write the tally arrow from sender.
+	If max size is reached, I truncate the diagram."
+
+	| senderName receiverName selector arrow out |
+	self needToTruncate 
+		ifNotEmpty: [ :str | ^str ].
 	senderName := self normalized: sender theClass.
-	receiverName := self normalized: aTally theClass.
-	selector := aTally method selector.
-	arrow := (sender theClass inheritsFrom: aTally method methodClass)
+	receiverName := self normalized: tally theClass.
+	selector := tally method selector.
+	arrow := (sender theClass inheritsFrom: tally method methodClass)
 		ifFalse: [ ' -> ' ]
 		ifTrue: [ ' -->> ' ].
-	out := '' writeStream.
+	out := ''.
 	receiverName = self catchAllName
 		ifFalse: [ senderName = self catchAllName
 				ifTrue: [ savedSenders ifNotEmpty: [ senderName := savedSenders removeLast ].
-					selector := '...' , selector ].
-			out << senderName << arrow << receiverName << ': ' << selector
-				<< String cr ]
+					selector := '...' ,+ selector ].
+			out := out ,+ senderName ,+ arrow ,+ receiverName ,+ ': '
+				,+ selector ,+ String cr ]
 		ifTrue: [ senderName = self catchAllName
 				ifFalse: [ savedSenders addLast: senderName ] ].
-	^ out contents , (self visit: aTally)
+	^ out ,+ (self visit: tally)
 ]
