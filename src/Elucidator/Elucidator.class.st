@@ -11,6 +11,32 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+Elucidator class >> elucidateBlock: block [
+	"I draw a sequence diagram for the block. I timeout ofter 10 sek.
+	I assume the block do not need arguments"
+
+	self elucidateBlock: block timeout: 10
+]
+
+{ #category : #'as yet unclassified' }
+Elucidator class >> elucidateBlock: block timeout: timeoutSeconds [
+	"I draw a sequence diagram for the block. I timeout.
+	I assume the block do not need arguments"
+
+	| uml |
+	uml := [ EluSeqDiagram new
+		tallyFor: block;
+		uml ]
+		valueWithin: (Duration seconds: (timeoutSeconds min: 90))
+		onTimeout: [ nil ].
+	uml
+		ifNotNil: [ PlantUMLBridge webbrowseUML: uml ]
+		ifNil: [ AlertDialogWindow new
+				text: 'Diagram construction timed out ';
+				openInWorld ]
+]
+
+{ #category : #'as yet unclassified' }
 Elucidator class >> elucidateObject: obj [
 	"I draw an object diagram of range 2 with outset in obj"
 	self elucidateObject: obj range: 2
