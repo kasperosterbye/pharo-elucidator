@@ -11,6 +11,21 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+Elucidator class >> elucidateObject: obj [
+	"I draw an object diagram of range 2 with outset in obj"
+	self elucidateObject: obj range: 2
+
+	
+]
+
+{ #category : #'as yet unclassified' }
+Elucidator class >> elucidateObject: obj range: range [
+	"I draw an object diagram of range with outset in obj"
+	(ObjDiaModel new range: range from: obj) webbrowseDiagram 
+	
+]
+
+{ #category : #'as yet unclassified' }
 Elucidator class >> elucidatePackage: packageName [ 
 	self instance openBrowserOnPackage: packageName
 ]
