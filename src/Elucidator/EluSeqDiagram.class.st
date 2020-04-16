@@ -85,7 +85,7 @@ EluSeqDiagram >> initialize [
 
 { #category : #private }
 EluSeqDiagram >> normalized: aClass [ 
-	^(packageFilter  anySatisfy: [ :pn | pn isEmpty or: [aClass category beginsWith: pn]])
+	^(packageFilter  isEmpty or: [packageFilter anySatisfy: [ :pn | pn isEmpty or: [aClass category beginsWith: pn]]])
 		ifTrue: [ aClass name asString copyReplaceAll: ' ' with: '_'] 
 		ifFalse: [ ^ self catchAllName  ]
 	
