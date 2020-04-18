@@ -32,7 +32,7 @@ EluSeqClassParticipant >> participantDeclOn: stream [
 
 { #category : #accessing }
 EluSeqClassParticipant >> refName [
-	^ theClass name copyReplaceAll: ' ' with: '_'
+	^ (theClass name copyReplaceAll: ' ' with: '_') copyReplaceAll: '-' with: '_' 
 ]
 
 { #category : #accessing }

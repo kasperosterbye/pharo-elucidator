@@ -25,7 +25,7 @@ Elucidator class >> elucidateBlock: block timeout: timeoutSeconds [
 
 	| uml |
 	uml := [ EluSeqDiagram new
-		tallyFor: block;
+		fromBlock: block;
 		uml ]
 		valueWithin: (Duration seconds: (timeoutSeconds min: 90))
 		onTimeout: [ nil ].
@@ -167,7 +167,7 @@ Elucidator >> initialize [
 	teapot
 		GET:
 			'seqdiagram/<class>/<example>'
-				-> [ :req | EluSeqDiagram  diagramRequest: req ];
+				-> [ :req | EluSeqDiagram diagramRequest: req ];
 		GET:
 			'objdiagram/<class>/<range>'
 				-> [ :req | ObjDiaModel diagramRequest: req ];

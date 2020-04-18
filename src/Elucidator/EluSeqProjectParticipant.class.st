@@ -42,5 +42,5 @@ EluSeqProjectParticipant >> projectName: anObject [
 
 { #category : #accessing }
 EluSeqProjectParticipant >> refName [
-	^ projectName copyReplaceAll: '-' with: '_'
+	^ (projectName copyReplaceAll: ' ' with: '_') copyReplaceAll: '-' with: '_' 
 ]
