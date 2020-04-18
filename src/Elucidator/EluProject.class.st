@@ -21,7 +21,7 @@ EluProject class >> fromClass: aClass [
 
 { #category : #'instance creation' }
 EluProject class >> fromPackage: rPack [
-	^ self new fromPackage: rPack name
+	^ self fromPackageName: rPack name
 ]
 
 { #category : #'instance creation' }

@@ -86,11 +86,7 @@ Elucidator >> about [
 { #category : #private }
 Elucidator >> browseClass: className [
 	| cls |
-	cls := (className endsWith: ' class')
-		ifTrue: [ (className copyReplaceAll: ' class' with: '') asClass class ]
-		ifFalse: [ className asClass ].
-	(className endsWith: '_class')
-		ifTrue: [ cls := (className copyReplaceAll: '_class' with: '') asClass class ].
+	cls := self classFromName: className.
 	WorldState defer: [ cls browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
@@ -120,13 +116,22 @@ Elucidator >> browseHelp: className [
 { #category : #private }
 Elucidator >> browseMethod: selector inClass: className [
 	| cls |
-	cls := (className endsWith: ' class')
-		ifTrue: [ (className copyReplaceAll: ' class' with: '') asClass class ]
-		ifFalse: [ className asClass ].
+	cls := self classFromName: className.
 	WorldState defer: [ (cls lookupSelector: selector asSymbol) browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself
+]
+
+{ #category : #'as yet unclassified' }
+Elucidator >> classFromName:className [
+
+(className endsWith: ' class')
+		ifTrue: [ ^(className copyReplaceAll: ' class' with: '') asClass class ].
+	(className endsWith: '_class')
+		ifTrue: [ ^ (className copyReplaceAll: '_class' with: '') asClass class ].
+	
+		^ className asClass.
 ]
 
 { #category : #dispatching }

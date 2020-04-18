@@ -18,22 +18,22 @@ Class {
 
 { #category : #'as yet unclassified' }
 EluSeqDiagram class >> diagramRequest: request [
-	| size class example |
-	size := (request at: #size ifAbsent: [ '35' ]) asInteger.
+	| size class example project diagram uml |
+	size := (request at: #size ifAbsent: [ '200' ]) asInteger.
 	example := (request at: #example) asSymbol.
 	class := ((request at: #class) copyReplaceAll: ' class' with: '')
 		asClass.
+	project := EluProject fromClass: class.
+	diagram := self new.
+	diagram
+		size: size;
+		addPackageFilter: {project name}.
+	(class inheritsFrom: TestCase)
+				ifTrue: [ diagram tallyFor: [ class run: example ] ]
+				ifFalse: [ diagram tallyFor: [ class perform: example ] ].
+	uml := diagram uml.
 	PlantUMLBridge
-		webbrowseUML:
-			((class inheritsFrom: TestCase)
-				ifTrue: [ self new
-						size: size;
-						tallyFor: [ class run: example ];
-						uml ]
-				ifFalse: [ self new
-						size: size;
-						tallyFor: [ class perform: example ];
-						uml ])
+		webbrowseUML: uml
 ]
 
 { #category : #examples }
@@ -70,6 +70,11 @@ EluSeqDiagram class >> seqDiagramFor: aBlock in: packageList skipSelectors: sele
 	^ PlantUMLBridge webbrowseUML: ulmSource
 ]
 
+{ #category : #accessing }
+EluSeqDiagram >> addPackageFilter: anObject [
+	packageFilter := anObject
+]
+
 { #category : #private }
 EluSeqDiagram >> catchAllName [
 	^'Something'
@@ -79,6 +84,7 @@ EluSeqDiagram >> catchAllName [
 EluSeqDiagram >> initialize [
 	savedSenders := OrderedCollection new.
 	packageFilter := OrderedCollection new.
+	skipSelectors := OrderedCollection new.
 	savedSenders addLast: self catchAllName.
 	maxSize := 100
 ]
@@ -103,7 +109,7 @@ EluSeqDiagram >> normalized: aClass [
 		ifTrue: [ '"[[http://localhost:20203/browseClass/'
 				, (aClass name asString copyReplaceAll: ' ' with: '_') , ' '
 				, aClass name asString , ']]" ' ]
-		ifFalse: [ ^ self catchAllName ]
+		ifFalse: [ ^ aClass package name copyReplaceAll: ' ' with: '_']
 ]
 
 { #category : #private }
@@ -111,8 +117,51 @@ EluSeqDiagram >> oldnormalized: aClass [
 	^ (packageFilter isEmpty
 		or: [ packageFilter
 				anySatisfy: [ :pn | pn isEmpty or: [ aClass category beginsWith: pn ] ] ])
-		ifTrue: [ aClass name asString copyReplaceAll: ' ' with: '_' ]
+		ifTrue: [ '"[[http://localhost:20203/browseClass/'
+				, (aClass name asString copyReplaceAll: ' ' with: '_') , ' '
+				, aClass name asString , ']]" ' ]
 		ifFalse: [ ^ self catchAllName ]
+]
+
+{ #category : #'uml writing' }
+EluSeqDiagram >> olduml [
+	^ self uml: {} skipSelectors: {}
+]
+
+{ #category : #'uml writing' }
+EluSeqDiagram >> olduml: packages skipSelectors: selectors [
+	| out |
+	packageFilter := packages.
+	skipSelectors := selectors , #(tallyFor:).
+	out := '' writeStream.
+	out
+		<< '@startuml';
+		cr.
+	out
+		<<
+			'skinparam shadowing false
+skinparam sequence {
+ParticipantFontSize 12
+}';
+		cr.
+	(out << '-> ' << (self normalized: theTally theClass) << ': ')
+		<< theTally method selector;
+		cr.
+	out << (self visit: theTally).
+	out
+		<< '@enduml';
+		cr.
+	^ out contents
+]
+
+{ #category : #accessing }
+EluSeqDiagram >> packageFilter [
+	^ packageFilter
+]
+
+{ #category : #accessing }
+EluSeqDiagram >> packageFilter: anObject [
+	packageFilter := anObject
 ]
 
 { #category : #'as yet unclassified' }
@@ -127,9 +176,19 @@ EluSeqDiagram >> size: size [
 	maxSize := size.
 ]
 
+{ #category : #accessing }
+EluSeqDiagram >> skipSelectors [
+	^ skipSelectors
+]
+
+{ #category : #accessing }
+EluSeqDiagram >> skipSelectors: anObject [
+	skipSelectors := anObject
+]
+
 { #category : #'instance creation' }
 EluSeqDiagram >> tallyFor: aBlock [
-	^ theTally := MessageTally
+	theTally := MessageTally
 		tallySendsTo: nil
 		inBlock: aBlock
 		showTree: false
@@ -139,7 +198,27 @@ EluSeqDiagram >> tallyFor: aBlock [
 
 { #category : #'uml writing' }
 EluSeqDiagram >> uml [
-	^ self uml: {} skipSelectors: {}
+	| out |
+	skipSelectors := skipSelectors , #(tallyFor:).
+	out := '' writeStream.
+	out
+		<< '@startuml';
+		cr.
+	out
+		<<
+			'skinparam shadowing false
+skinparam sequence {
+ParticipantFontSize 12
+}';
+		cr.
+	(out << '-> ' << (self normalized: theTally theClass) << ': ')
+		<< theTally method selector;
+		cr.
+	out << (self visit: theTally).
+	out
+		<< '@enduml';
+		cr.
+	^ out contents
 ]
 
 { #category : #'uml writing' }
@@ -199,7 +278,6 @@ EluSeqDiagram >> visit: sender to: tally [
 	If max size is reached, I truncate the diagram."
 
 	| senderName receiverName selector arrow out |
-	self needToTruncate ifNotEmpty: [ :str | ^ str ].
 	senderName := self normalized: sender theClass.
 	receiverName := self normalized: tally theClass.
 	selector := tally method selector.
@@ -208,11 +286,15 @@ EluSeqDiagram >> visit: sender to: tally [
 		ifTrue: [ ' -->> ' ].
 	out := ''.
 	receiverName = self catchAllName
-		ifFalse: [ senderName = self catchAllName
+		ifFalse: [ 
+			self needToTruncate ifNotEmpty: [ :str | ^ str ].
+	
+			senderName = self catchAllName
 				ifTrue: [ savedSenders ifNotEmpty: [ senderName := savedSenders removeLast ].
 					selector := '...' ,+ selector ].
 			out := out ,+ senderName ,+ arrow ,+ receiverName ,+ ': '
-				,+ (self selectorLink: selector class: tally theClass) ,+ String cr ]
+				,+ (self selectorLink: selector class: tally theClass)
+				,+ String cr ]
 		ifTrue: [ senderName = self catchAllName
 				ifFalse: [ savedSenders addLast: senderName ] ].
 	^ out ,+ (self visit: tally)
