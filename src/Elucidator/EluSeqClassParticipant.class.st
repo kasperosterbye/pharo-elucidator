@@ -19,13 +19,20 @@ EluSeqClassParticipant >> isClassParticipant [
 
 { #category : #accessing }
 EluSeqClassParticipant >> name [
-	^ theClass name copyReplaceAll: ' ' with: '_' 
+	^ theClass name 
 ]
 
 { #category : #accessing }
 EluSeqClassParticipant >> participantDeclOn: stream [
-	stream << 'participant "[[http://localhost:20203/browseClass/'
-		<< self name << ' ' << self name << ']]" as ' << self name;cr
+	(stream << 'participant "[[http://localhost:20203/browseClass/'
+		<< self refName << ' ' << self name << ']]" as ')
+		<< self refName;
+		cr
+]
+
+{ #category : #accessing }
+EluSeqClassParticipant >> refName [
+	^ theClass name copyReplaceAll: ' ' with: '_'
 ]
 
 { #category : #accessing }

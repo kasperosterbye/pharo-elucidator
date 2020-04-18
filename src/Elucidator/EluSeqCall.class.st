@@ -26,15 +26,22 @@ EluSeqCall >> arrow [
 
 { #category : #'as yet unclassified' }
 EluSeqCall >> callDeclOn: stream [
-	(stream << sender name << self arrow << receiver name
-		<< ' : [[http://localhost:20203/browseMethod/' << receiver name
-		<< '/' << selector << ' ' << selector)
-		<< ']]';
-		cr.
-	subCalls ifNotEmpty: [ 
-		stream << 'activate ' << sender name; cr.
-		subCalls do: [ :call | call callDeclOn: stream ].
-		stream << 'return return'; cr ]
+	self includeInDiagram
+		ifTrue: [ (stream << sender refName << self arrow << receiver refName
+				<< ' : [[http://localhost:20203/browseMethod/' << receiver refName
+				<< '/' << selector << ' ' << selector)
+				<< ']]';
+				cr.
+			subCalls
+				ifNotEmpty: [ (stream << 'activate ')
+						<< receiver refName.
+						receiver isClassParticipant ifFalse: [ stream << ' #BBBBBB' ].
+						stream cr.
+					subCalls do: [ :call | call callDeclOn: stream ].
+					stream
+						<< 'return return';
+						cr ] ]
+		ifFalse: [ subCalls do: [ :call | call callDeclOn: stream ] ]
 ]
 
 { #category : #'instance creation' }
@@ -45,11 +52,23 @@ EluSeqCall >> fromTally: tally in: aDiagram [
 	receiver := diagram participantFor: tally theClass.
 	selector := tally method selector.
 	subCalls := tally receivers
+		collect: [ :rec | 
+			self class new
+				sender: receiver;
+				fromTally: rec in: diagram ]
+	"subCalls := tally receivers
 		select: [ :rec | diagram includeCallFrom: receiver to: rec ]
 		thenCollect: [ :rec | 
 			self class new
 				sender: receiver;
-				fromTally: rec in: diagram ]
+				fromTally: rec in: diagram ]"
+]
+
+{ #category : #'as yet unclassified' }
+EluSeqCall >> includeInDiagram [
+	(sender isClassParticipant or: [ receiver isClassParticipant ])
+		ifTrue: [ ^ true ].
+	^ sender refName ~= receiver refName
 ]
 
 { #category : #printing }

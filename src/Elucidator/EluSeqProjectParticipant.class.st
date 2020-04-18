@@ -23,15 +23,11 @@ EluSeqProjectParticipant >> name [
 ]
 
 { #category : #accessing }
-EluSeqProjectParticipant >> participantDecl [
-	^'participant "http://localhost:20203/all/package'
-]
-
-{ #category : #accessing }
 EluSeqProjectParticipant >> participantDeclOn: stream [
-	stream << 'participant "[[http://localhost:20203/all/package/'
-		<< self name << ' ' << self name << ']]" as ' << self name
-		<< '<< (P,#ADD1B2) >> #999999';cr
+	(stream << 'participant "[[http://localhost:20203/all/package/'
+		<< self name << ' ' << self name << ']]" as ' << self refName)
+		<< '<< (P,#ADD1B2) >> #999999';
+		cr
 ]
 
 { #category : #accessing }
@@ -42,4 +38,9 @@ EluSeqProjectParticipant >> projectName [
 { #category : #accessing }
 EluSeqProjectParticipant >> projectName: anObject [
 	projectName := anObject
+]
+
+{ #category : #accessing }
+EluSeqProjectParticipant >> refName [
+	^ projectName copyReplaceAll: '-' with: '_'
 ]
