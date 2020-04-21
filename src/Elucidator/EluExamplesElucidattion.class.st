@@ -27,9 +27,10 @@ EluExamplesElucidattion >> diagramLinksFor: aClass example: example html: html [
 EluExamplesElucidattion >> elucidateClass: class html: html [
 	| examples |
 	examples := self findExampleMethods
-		select: [ :meth | meth methodClass inheritsFrom: class ].
+		select:
+			[ :meth | meth methodClass = class class or: [ meth methodClass inheritsFrom: class class] ].
 	examples
-		ifEmpty: [ html part: 'No examples in class ' , class name, ' or subclasses'.
+		ifEmpty: [ html part: 'No examples in class ' , class name , ' or subclasses'.
 			^ self ].
 	html part: 'Example code for ' , class name.
 	" each item is on the form: pharoLink, class>>method, first line of comment if any"
