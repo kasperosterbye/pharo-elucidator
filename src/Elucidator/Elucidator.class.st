@@ -1,3 +1,6 @@
+"
+I am the entry class of the Elucidator project.
+"
 Class {
 	#name : #Elucidator,
 	#superclass : #Object,
@@ -37,11 +40,17 @@ Elucidator class >> elucidateBlock: block timeout: timeoutSeconds [
 ]
 
 { #category : #'as yet unclassified' }
+Elucidator class >> elucidateClass: class [
+	"I produce a class elucidation web page"
+
+	^ self instance openBrowserOnClass: class
+]
+
+{ #category : #'as yet unclassified' }
 Elucidator class >> elucidateObject: obj [
 	"I draw an object diagram of range 2 with outset in obj"
-	self elucidateObject: obj range: 2
 
-	
+	self elucidateObject: obj range: 2
 ]
 
 { #category : #'as yet unclassified' }
@@ -187,6 +196,13 @@ Elucidator >> initialize [
 				-> [ :req | self browseHelp: (req at: #helpClass) ];
 		GET: '/<elucidation>/<scope>/<subject>' -> [ :req | self dispatch: req ];
 		start
+]
+
+{ #category : #'as yet unclassified' }
+Elucidator >> openBrowserOnClass: class [
+	| url |
+	url := self httpPrefix , 'all/class/' , class name.
+	WebBrowser openOn: url
 ]
 
 { #category : #'as yet unclassified' }

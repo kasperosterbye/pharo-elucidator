@@ -27,9 +27,9 @@ Elucidation class >> dispatch: req on: html [
 Elucidation >> elucidate: subject scope: scope html: html [
 	scope = #package
 		ifTrue: [ ^ self elucidatePackage: subject html: html ].
-	"scope = #class
-		ifTrue: [ ^ self elucidateClass: subject ].
-	^ self scopeNotDefined"
+	scope = #class
+		ifTrue: [ ^ self elucidateClass: subject html: html].
+	^ self scopeNotDefined
 ]
 
 { #category : #elucidation }
@@ -40,6 +40,14 @@ Elucidation >> elucidateClass: subject html: html [
 { #category : #elucidation }
 Elucidation >> elucidatePackage: subject html: html [ 
 	self subclassResponsibility 
+]
+
+{ #category : #'helper methods' }
+Elucidation >> findClass: className [
+	"find class based on class name. Take care with meta classes which has a space in their name"
+
+	^ (className copyReplaceAll: ' class' with: '') asClass.
+	
 ]
 
 { #category : #'helper methods' }

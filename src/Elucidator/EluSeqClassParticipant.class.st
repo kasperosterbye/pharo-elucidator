@@ -1,3 +1,6 @@
+"
+See comment in EluSeqParticipant
+"
 Class {
 	#name : #EluSeqClassParticipant,
 	#superclass : #EluSeqParticipant,

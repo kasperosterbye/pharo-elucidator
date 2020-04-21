@@ -1,3 +1,6 @@
+"
+I try to find example code. I look for methods with one of the pragmas mentioned in #findExampleMethods, or whose selector contains the substring 'example'.
+"
 Class {
 	#name : #EluExamplesElucidattion,
 	#superclass : #Elucidation,
@@ -18,6 +21,27 @@ EluExamplesElucidattion >> diagramLinksFor: aClass example: example html: html [
 	html
 		elucidateLink: ' Sequence Diagram for example'
 		to: 'seqdiagram/' , aClass name , '/' , example selector
+]
+
+{ #category : #elucidation }
+EluExamplesElucidattion >> elucidateClass: class html: html [
+	| examples |
+	examples := self findExampleMethods
+		select: [ :meth | meth methodClass inheritsFrom: class ].
+	examples
+		ifEmpty: [ html part: 'No examples in class ' , class name, ' or subclasses'.
+			^ self ].
+	html part: 'Example code for ' , class name.
+	" each item is on the form: pharoLink, class>>method, first line of comment if any"
+	html
+		ulist: [ examples
+				do: [ :method | 
+					html
+						item: [ html methodBrowseLink: method.
+							html raw: method name.
+							(method selector isUnary and: [ method methodClass isMeta ])
+								ifTrue:
+									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
 ]
 
 { #category : #elucidation }

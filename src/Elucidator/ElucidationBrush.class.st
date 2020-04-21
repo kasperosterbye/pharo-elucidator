@@ -55,9 +55,19 @@ h1 {
 ]
 
 { #category : #'html rendering' }
+ElucidationBrush >> browseClassCommentLink: aClass [
+	self elucidateLinkTo: 'browseClassComment/' , aClass name
+]
+
+{ #category : #'html rendering' }
 ElucidationBrush >> classBrowseLink: aClass [
 	self
 		elucidateLinkTo: 'browseClass/' , aClass name
+]
+
+{ #category : #'html rendering' }
+ElucidationBrush >> classCommentBrowseLink: aClass [
+	self elucidateLinkTo: 'browseClassComment/' , aClass name
 ]
 
 { #category : #'html rendering' }

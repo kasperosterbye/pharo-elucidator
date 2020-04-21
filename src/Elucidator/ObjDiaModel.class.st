@@ -33,10 +33,11 @@ Class {
 
 { #category : #'as yet unclassified' }
 ObjDiaModel class >> diagramRequest: req [
-	| theClass range obj |
-	theClass := (req at: #class) asClass.
+	| class range obj instances|
+	class := (req at: #class) asClass.
 	range := (req at: #range) asNumber.
-	obj := theClass allInstances in: [:col | col at: (Random new nextInt: col size)].
+	instances := class allInstances ifEmpty: [ class allSubInstances ].
+	obj := instances in: [:col | col at: (Random new nextInt: col size)].
 	(self new range: range from: obj) webbrowseDiagram.
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;

@@ -5,20 +5,6 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-EluInstanceElucidattion >> diagramLinks: number for: aClass html: html [
-	"Create links to object diagrams for a instance of aClass. make links for range 1 through 5"
-
-	"create links of the form 'objdiagram/<class>/<range>'"
-
-	html raw: ' Diagrams for random instance. Diagram range: '.
-	1 to: (5 min: number) do: [ :range | 
-		html
-			elucidateLink: range printString
-				to: 'objdiagram/' , aClass name , '/' , range printString;
-			raw: ' ' ]
-]
-
-{ #category : #'as yet unclassified' }
 EluInstanceElucidattion >> diagramLinksFor: aClass html: html [
 	"Create links to object diagrams for a instance of aClass. make links for range 1 through 5"
 
@@ -30,6 +16,16 @@ EluInstanceElucidattion >> diagramLinksFor: aClass html: html [
 			elucidateLink: range printString
 				to: 'objdiagram/' , aClass name , '/' , range printString;
 			raw: ' ' ]
+]
+
+{ #category : #elucidation }
+EluInstanceElucidattion >> elucidateClass: class html: html [
+	| instances |
+	instances := class allSubInstances.
+	instances
+		ifEmpty: [ html part: 'No instances of class in image'.
+			^ self ].
+	self diagramLinksFor: class html: html
 ]
 
 { #category : #elucidation }

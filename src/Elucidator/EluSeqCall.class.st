@@ -1,3 +1,8 @@
+"
+I represent a call in a sequence diagram. I have the sender, the receiver, and the selector of the call.
+
+In addition, I keep all the calls that happens as children of me. 
+"
 Class {
 	#name : #EluSeqCall,
 	#superclass : #Object,
@@ -61,12 +66,6 @@ EluSeqCall >> fromTally: tally in: aDiagram [
 			self class new
 				sender: receiver;
 				fromTally: rec in: diagram ]
-	"subCalls := tally receivers
-		select: [ :rec | diagram includeCallFrom: receiver to: rec ]
-		thenCollect: [ :rec | 
-			self class new
-				sender: receiver;
-				fromTally: rec in: diagram ]"
 ]
 
 { #category : #'as yet unclassified' }

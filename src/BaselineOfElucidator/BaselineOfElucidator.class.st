@@ -16,7 +16,5 @@ BaselineOfElucidator >> baseline: spec [
 						loads: #('Deployment') ];
 				baseline: 'PlantUMLBridge'
 					with: [ spec repository: 'github://kasperosterbye/PlantUMLBridge' ];
-				baseline: 'StringUtilities'
-					with: [ spec repository: 'github://kasperosterbye/StringUtilities' ];
 				package: 'Elucidator' ]
 ]

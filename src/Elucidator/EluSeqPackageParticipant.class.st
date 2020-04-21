@@ -1,5 +1,8 @@
+"
+See comment in EluSeqParticipant
+"
 Class {
-	#name : #EluSeqProjectParticipant,
+	#name : #EluSeqPackageParticipant,
 	#superclass : #EluSeqParticipant,
 	#instVars : [
 		'projectName'
@@ -8,22 +11,22 @@ Class {
 }
 
 { #category : #'instance creation' }
-EluSeqProjectParticipant class >> for: projName [ 
+EluSeqPackageParticipant class >> for: projName [ 
 	^self new projectName: projName
 ]
 
 { #category : #testing }
-EluSeqProjectParticipant >> isClassParticipant [
+EluSeqPackageParticipant >> isClassParticipant [
 	^ false
 ]
 
 { #category : #accessing }
-EluSeqProjectParticipant >> name [
+EluSeqPackageParticipant >> name [
 	^ projectName
 ]
 
 { #category : #accessing }
-EluSeqProjectParticipant >> participantDeclOn: stream [
+EluSeqPackageParticipant >> participantDeclOn: stream [
 	(stream << 'participant "[[http://localhost:20203/all/package/'
 		<< self name << ' ' << self name << ']]" as ' << self refName)
 		<< '<< (P,#ADD1B2) >> #999999';
@@ -31,16 +34,16 @@ EluSeqProjectParticipant >> participantDeclOn: stream [
 ]
 
 { #category : #accessing }
-EluSeqProjectParticipant >> projectName [
+EluSeqPackageParticipant >> projectName [
 	^ projectName
 ]
 
 { #category : #accessing }
-EluSeqProjectParticipant >> projectName: anObject [
+EluSeqPackageParticipant >> projectName: anObject [
 	projectName := anObject
 ]
 
 { #category : #accessing }
-EluSeqProjectParticipant >> refName [
+EluSeqPackageParticipant >> refName [
 	^ (projectName copyReplaceAll: ' ' with: '_') copyReplaceAll: '-' with: '_' 
 ]

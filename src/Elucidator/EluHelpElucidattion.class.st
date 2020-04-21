@@ -1,3 +1,8 @@
+"
+There is a help browser in the Pharo image. It is badly out of date. Nevertheless, I try to find out if there are any help topics to be used in elucidation. 
+
+As there are so few, I only look for whole projects. Looking up for a class or package will look up in the containing project.
+"
 Class {
 	#name : #EluHelpElucidattion,
 	#superclass : #Elucidation,
