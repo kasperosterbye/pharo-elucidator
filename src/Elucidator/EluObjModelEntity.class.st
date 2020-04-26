@@ -9,7 +9,7 @@ I keep track of which sources (incoming references) and which destinations (outg
 
 "
 Class {
-	#name : #ObjDiaModelEntity,
+	#name : #EluObjModelEntity,
 	#superclass : #Object,
 	#instVars : [
 		'sources',
@@ -24,23 +24,23 @@ Class {
 }
 
 { #category : #'instance creation' }
-ObjDiaModelEntity class >> on: obj in: model [
+EluObjModelEntity class >> on: obj in: model [
 	| entityClass |
 	entityClass := obj isCollection
-		ifTrue: [ ObjDiaModelCollection ]
-		ifFalse: [ ObjDiaModelObject ].
+		ifTrue: [ EluObjModelCollection ]
+		ifFalse: [ EluObjModelObject ].
 	^ entityClass new
 		obj: obj;
 		model: model
 ]
 
 { #category : #'as yet unclassified' }
-ObjDiaModelEntity >> analyzeDestinationRange [
+EluObjModelEntity >> analyzeDestinationRange [
 	self subclassResponsibility 
 ]
 
 { #category : #'as yet unclassified' }
-ObjDiaModelEntity >> analyzeRange [
+EluObjModelEntity >> analyzeRange [
 	"I add sources and destinations to this entity"
 
 	range <= 0
@@ -49,7 +49,7 @@ ObjDiaModelEntity >> analyzeRange [
 ]
 
 { #category : #'as yet unclassified' }
-ObjDiaModelEntity >> analyzeSourceRange [
+EluObjModelEntity >> analyzeSourceRange [
 	| sourceObjects accessors|
 	(obj class category beginsWith: 'Kernel')
 		ifTrue: [ ^self ].
@@ -76,31 +76,31 @@ ObjDiaModelEntity >> analyzeSourceRange [
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> destinationEntities [
+EluObjModelEntity >> destinationEntities [
 	^ destinations  collect: [ :ref | ref destination  ]
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> destinationObjects [
+EluObjModelEntity >> destinationObjects [
 	^ self destinations collect: [ :ref | ref destination obj ]
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> destinations [
+EluObjModelEntity >> destinations [
 	^ destinations
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> destinations: anObject [
+EluObjModelEntity >> destinations: anObject [
 	destinations := anObject
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> destinationsAt: accessor put: value [
+EluObjModelEntity >> destinationsAt: accessor put: value [
 	"add an outgoing ref from me to the entity for value"
 	| destination ref |
 	destination := model entityFor: value.
-	ref := ObjDiaModelReference new
+	ref := EluObjModelReference new
 		source: self -> accessor;
 		destination: destination;
 		model: model.
@@ -108,10 +108,10 @@ ObjDiaModelEntity >> destinationsAt: accessor put: value [
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> destinationsAt: accessor putEntity: destination [
+EluObjModelEntity >> destinationsAt: accessor putEntity: destination [
 	"add an outgoing ref from me to the entity for value"
 	| ref |
-	ref := ObjDiaModelReference new
+	ref := EluObjModelReference new
 		source: self -> accessor;
 		destination: destination;
 		model: model.
@@ -119,22 +119,13 @@ ObjDiaModelEntity >> destinationsAt: accessor putEntity: destination [
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> entityId [
+EluObjModelEntity >> entityId [
 	entityId ifNil:[ entityId := model nextEntityNumber].
 	^ entityId 
 ]
 
-{ #category : #analysis }
-ObjDiaModelEntity >> includeInPseudo: pseudo [
-	pseudoObject ifNotNil: [ ^ self ].
-	(model presentationFilter check: self)
-		ifFalse: [ pseudoObject := pseudo.
-			pseudoObject unvisitedSources addAll: sources.
-			pseudoObject unvisitedDestinations addAll: destinations ] 
-]
-
 { #category : #initialization }
-ObjDiaModelEntity >> initialize [
+EluObjModelEntity >> initialize [
 	sources := OrderedCollection new.
 	destinations  := OrderedCollection  new.
 	range := 0.
@@ -142,43 +133,43 @@ ObjDiaModelEntity >> initialize [
 ]
 
 { #category : #testing }
-ObjDiaModelEntity >> isCollection [
+EluObjModelEntity >> isCollection [
 	^ false
 ]
 
 { #category : #testing }
-ObjDiaModelEntity >> isPartOfPresentation [
+EluObjModelEntity >> isPartOfPresentation [
 	pseudoObject ifNotNil: [ ^false ].
 	^ (model presentationFilter presentationCheck: obj)
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> model [
+EluObjModelEntity >> model [
 	^ model
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> model: anObject [
+EluObjModelEntity >> model: anObject [
 	model := anObject
 ]
 
 { #category : #testing }
-ObjDiaModelEntity >> modelsCollection [
+EluObjModelEntity >> modelsCollection [
 	self subclassResponsibility 
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> obj [
+EluObjModelEntity >> obj [
 	^ obj
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> obj: anObject [
+EluObjModelEntity >> obj: anObject [
 	obj := anObject
 ]
 
 { #category : #'as yet unclassified' }
-ObjDiaModelEntity >> packageHtmlLink [
+EluObjModelEntity >> packageHtmlLink [
 	| packageName |
 	packageName := self packageName.
 	^ '"[[http://localhost:20203/all/package/' , packageName , ' '
@@ -186,99 +177,81 @@ ObjDiaModelEntity >> packageHtmlLink [
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> packageName [
+EluObjModelEntity >> packageName [
 	^ self subclassResponsibility
 ]
 
-{ #category : #analysis }
-ObjDiaModelEntity >> preparePresentation [
-	(model presentationFilter presentationCheck: obj)
-		ifTrue: [ ^ self ].
-	pseudoObject ifNotNil: [ ^ self ].
-	self removeFromPresentation
-]
-
 { #category : #writing }
-ObjDiaModelEntity >> printName [
+EluObjModelEntity >> printName [
+	"I print the name of my class - including ' class' if I am a class myself"
 	^ obj class name
 ]
 
 { #category : #writing }
-ObjDiaModelEntity >> printNameNoSpace [
+EluObjModelEntity >> printNameNoSpace [
+	"remove the space in 'Point class', and add my entityId numbere - eg. 'Point_classs23' "
+
 	^ (obj class name copyReplaceAll: ' ' with: '_') , self entityId
 ]
 
 { #category : #printing }
-ObjDiaModelEntity >> printOn: stream [
+EluObjModelEntity >> printOn: stream [
 	stream << 'Model of:( '.
 	obj printOn: stream.
 	stream << ') '
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> pseudoObject [
+EluObjModelEntity >> pseudoObject [
 	^ pseudoObject
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> pseudoObject: anObject [
+EluObjModelEntity >> pseudoObject: anObject [
 	pseudoObject := anObject
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> range [
+EluObjModelEntity >> range [
 	^ range
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> range: anObject [
+EluObjModelEntity >> range: anObject [
 	range := anObject
 ]
 
-{ #category : #removing }
-ObjDiaModelEntity >> removeFromPresentation [
-	"Assumes I need to be removed from the model.
-	Helper method called from preparePresentation"
-
-	pseudoObject := ObjDiaModelPseudoObject new.
-	pseudoObject
-		obj: pseudoObject;
-		model: model.
-	model entities at: pseudoObject put: pseudoObject.
-	model entities removeKey: obj.
-	pseudoObject closeReachOf: self.
-	pseudoObject removeRefsToSelf
-]
-
 { #category : #accessing }
-ObjDiaModelEntity >> sourceEntities [
+EluObjModelEntity >> sourceEntities [
 	^ sources collect: [ :ref | ref source key ]
 ]
 
 { #category : #'as yet unclassified' }
-ObjDiaModelEntity >> sourceObjects [
+EluObjModelEntity >> sourceObjects [
 	^ self destinations collect: [ :ref | ref destination obj ]
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> sources [
+EluObjModelEntity >> sources [
 	^ sources
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> sources: anObject [
+EluObjModelEntity >> sources: anObject [
 	sources := anObject
 ]
 
 { #category : #writing }
-ObjDiaModelEntity >> url [
+EluObjModelEntity >> url [
+	"create a link in markup: '[[url anchor text]]'"
 	^ '[[http://localhost:20203/inspect/' , model id , '/'
 		, self printNameNoSpace , ' ' , self printName , ']]'
 ]
 
 { #category : #accessing }
-ObjDiaModelEntity >> writeUmlOn: out [
-	(out << 'object "' << self url<< '" as ')
+EluObjModelEntity >> writeUmlOn: out [
+	"produce 'object URL as ID"
+	(out << 'object "' << self url << '" as ')
 		<< self printNameNoSpace;
 		cr
 ]

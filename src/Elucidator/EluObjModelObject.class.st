@@ -3,13 +3,13 @@
 I represent an object with instance variables (as opposed to a collection)
 "
 Class {
-	#name : #ObjDiaModelObject,
-	#superclass : #ObjDiaModelEntity,
+	#name : #EluObjModelObject,
+	#superclass : #EluObjModelEntity,
 	#category : #'Elucidator-ObjectDiagram'
 }
 
 { #category : #'as yet unclassified' }
-ObjDiaModelObject >> analyzeDestinationRange [
+EluObjModelObject >> analyzeDestinationRange [
 	| accessors |
 	obj isClass
 		ifTrue: [ ^ self ].
@@ -24,29 +24,29 @@ ObjDiaModelObject >> analyzeDestinationRange [
 ]
 
 { #category : #accessing }
-ObjDiaModelObject >> categoryName [
+EluObjModelObject >> categoryName [
 	^ obj class category
 ]
 
 { #category : #testing }
-ObjDiaModelObject >> modelsCollection [
+EluObjModelObject >> modelsCollection [
 	^ false
 ]
 
 { #category : #accessing }
-ObjDiaModelObject >> packageName [
+EluObjModelObject >> packageName [
 	^ obj class package name
 ]
 
 { #category : #writing }
-ObjDiaModelObject >> printName [
+EluObjModelObject >> printName [
 	obj isNumber
 		ifTrue: [ ^ obj printString contractTo: 12 ]
 		ifFalse: [ ^ obj class name ]
 ]
 
 { #category : #writing }
-ObjDiaModelObject >> writeRefsOn: out [
+EluObjModelObject >> writeRefsOn: out [
 	"This method writes the code for both the arrow, and for the seletors of the entity"
 	| mark |
 	mark := 1.
@@ -60,7 +60,7 @@ ObjDiaModelObject >> writeRefsOn: out [
 ]
 
 { #category : #writing }
-ObjDiaModelObject >> writeUmlOn: out [
+EluObjModelObject >> writeUmlOn: out [
 	(out << 'package ' << self packageHtmlLink)
 		<< ' {';
 		cr.

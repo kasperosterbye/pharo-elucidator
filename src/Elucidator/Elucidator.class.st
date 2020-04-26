@@ -56,7 +56,7 @@ Elucidator class >> elucidateObject: obj [
 { #category : #'as yet unclassified' }
 Elucidator class >> elucidateObject: obj range: range [
 	"I draw an object diagram of range with outset in obj"
-	(ObjDiaModel new range: range from: obj) webbrowseDiagram 
+	(EluObjModel new range: range from: obj) webbrowseDiagram 
 	
 ]
 
@@ -179,8 +179,8 @@ Elucidator >> initialize [
 				-> [ :req | EluSeqDiagram diagramRequest: req ];
 		GET:
 			'objdiagram/<class>/<range>'
-				-> [ :req | ObjDiaModel diagramRequest: req ];
-		GET: 'inspect/<model>/<oid>' -> [ :req | ObjDiaModel inspectRequest: req ];
+				-> [ :req | EluObjModel diagramRequest: req ];
+		GET: 'inspect/<model>/<oid>' -> [ :req | EluObjModel inspectRequest: req ];
 		GET:
 			'browseClassComment/<className>'
 				-> [ :req | self browseClassComment: (req at: #className) ];
