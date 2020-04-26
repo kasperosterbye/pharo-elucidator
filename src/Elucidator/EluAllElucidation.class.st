@@ -11,7 +11,7 @@ Class {
 { #category : #'as yet unclassified' }
 EluAllElucidation >> elucidateClass: subject html: html [
 	| class |
-	class := self findClass: subject.
+	class := Elucidator classFromHtmlName: subject.
 	self headerForClass: class on: html.
 	EluExamplesElucidattion new elucidateClass: class html: html.
 	EluInstanceElucidattion new elucidateClass: class html: html.

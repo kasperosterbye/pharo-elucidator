@@ -12,8 +12,8 @@ Class {
 EluObjModelCollection >> analyzeDestinationRange [
 	| count |
 	(obj class inheritsFrom: String)
-	ifTrue: [ ^self ].
-	count := 15.
+		ifTrue: [ ^ self ].
+	count := 7.
 	obj
 		do: [ :elem | 
 			| destination |

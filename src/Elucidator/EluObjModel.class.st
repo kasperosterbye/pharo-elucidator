@@ -31,8 +31,9 @@ Class {
 { #category : #'as yet unclassified' }
 EluObjModel class >> diagramRequest: req [
 	"I am called from the Elucidator to draw an object diagram for a random instance of a class."
+
 	| class range obj instances |
-	class := (req at: #class) asClass.
+	class := Elucidator classFromHtmlName: (req at: #class).
 	range := (req at: #range) asNumber.
 	instances := class allInstances ifEmpty: [ class allSubInstances ].
 	obj := instances
@@ -42,6 +43,15 @@ EluObjModel class >> diagramRequest: req [
 		statusLine: ZnStatusLine noContent;
 		entity: (ZnEntity html: 'It is done!');
 		yourself
+]
+
+{ #category : #example }
+EluObjModel class >> example [
+	"Show an object diagram in a webbrowser of the state of the (pharo) world."
+	"Range 2 means that we will draw a diagram two levels out from the starting object.
+	If the diagram becomes too large, plantuml will return a page which says 'forbidden'"
+	<example>
+	(self new range: 2 from: World worldState) webbrowseDiagram
 ]
 
 { #category : #'class initialization' }

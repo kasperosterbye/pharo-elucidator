@@ -27,11 +27,11 @@ EluSeqDiagram class >> diagramRequest: request [
 	"I create a svg sequence diagram from a request of the form:
 	seqdiagram/<class>/<method>?size=value.
 	I handle two kinds of methods - examples and test methods.	"
+
 	| size class example project diagram uml |
 	size := (request at: #size ifAbsent: [ '75' ]) asInteger.
 	example := (request at: #example) asSymbol.
-	class := ((request at: #class) copyReplaceAll: ' class' with: '')
-		asClass.
+	class := Elucidator classFromHtmlName: (request at: #class).
 	project := EluProject fromClass: class.
 	diagram := self new.
 	diagram

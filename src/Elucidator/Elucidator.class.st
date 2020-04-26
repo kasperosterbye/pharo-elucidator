@@ -13,7 +13,16 @@ Class {
 	#category : #'Elucidator-Core'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #utility }
+Elucidator class >> classFromHtmlName: className [
+	"meta classes might end with ' class' or '_class'. Return the class"
+
+	((className endsWith: ' class') or: [ className endsWith: '_class' ])
+		ifTrue: [ ^ (className allButLast: 5) asClass class  ]
+		ifFalse: [ ^ className asClass ]
+]
+
+{ #category : #elucidation }
 Elucidator class >> elucidateBlock: block [
 	"I draw a sequence diagram for the block. I timeout ofter 10 sek.
 	I assume the block do not need arguments"
@@ -21,7 +30,7 @@ Elucidator class >> elucidateBlock: block [
 	self elucidateBlock: block timeout: 10
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #elucidation }
 Elucidator class >> elucidateBlock: block timeout: timeoutSeconds [
 	"I draw a sequence diagram for the block. I timeout.
 	I assume the block do not need arguments"
@@ -39,30 +48,36 @@ Elucidator class >> elucidateBlock: block timeout: timeoutSeconds [
 				openInWorld ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #elucidation }
 Elucidator class >> elucidateClass: class [
 	"I produce a class elucidation web page"
 
 	^ self instance openBrowserOnClass: class
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #elucidation }
 Elucidator class >> elucidateObject: obj [
 	"I draw an object diagram of range 2 with outset in obj"
 
 	self elucidateObject: obj range: 2
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #elucidation }
 Elucidator class >> elucidateObject: obj range: range [
 	"I draw an object diagram of range with outset in obj"
 	(EluObjModel new range: range from: obj) webbrowseDiagram 
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #elucidation }
 Elucidator class >> elucidatePackage: packageName [ 
 	self instance openBrowserOnPackage: packageName
+]
+
+{ #category : #utility }
+Elucidator class >> htmlNameForClass: aClass [
+	"meta classes print as 'String class', which can confuse plantuml."
+	^ aClass name copyReplaceAll: ' ' with: '_'
 ]
 
 { #category : #'class initialization' }
@@ -95,7 +110,7 @@ Elucidator >> about [
 { #category : #private }
 Elucidator >> browseClass: className [
 	| cls |
-	cls := self classFromName: className.
+	cls := Elucidator classFromHtmlName: className.
 	WorldState defer: [ cls browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
@@ -105,7 +120,7 @@ Elucidator >> browseClass: className [
 { #category : #private }
 Elucidator >> browseClassComment: className [
 	WorldState
-		defer: [ className asClass browse
+		defer: [ (Elucidator classFromHtmlName: className ) browse
 				withTool: ClyClassCommentEditorToolMorph
 				do: [ :tool | tool selectAsMainTab ] ].
 	^ ZnResponse new
@@ -115,8 +130,7 @@ Elucidator >> browseClassComment: className [
 
 { #category : #private }
 Elucidator >> browseHelp: className [
-	
-	WorldState defer: [ HelpBrowser openOn: className asClass ].
+	WorldState defer: [ HelpBrowser openOn: (Elucidator classFromHtmlName:className)  ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself
@@ -125,22 +139,11 @@ Elucidator >> browseHelp: className [
 { #category : #private }
 Elucidator >> browseMethod: selector inClass: className [
 	| cls |
-	cls := self classFromName: className.
+	cls := Elucidator classFromHtmlName: className.
 	WorldState defer: [ (cls lookupSelector: selector asSymbol) browse ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself
-]
-
-{ #category : #'as yet unclassified' }
-Elucidator >> classFromName:className [
-
-(className endsWith: ' class')
-		ifTrue: [ ^(className copyReplaceAll: ' class' with: '') asClass class ].
-	(className endsWith: '_class')
-		ifTrue: [ ^ (className copyReplaceAll: '_class' with: '') asClass class ].
-	
-		^ className asClass.
 ]
 
 { #category : #dispatching }
@@ -155,7 +158,7 @@ Elucidator >> dispatch: req [
 		yourself
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 Elucidator >> httpPrefix [
 	^ 'http://localhost:<1p>/' expandMacrosWith: self socketNumber
 ]
@@ -198,14 +201,14 @@ Elucidator >> initialize [
 		start
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #dispatching }
 Elucidator >> openBrowserOnClass: class [
 	| url |
 	url := self httpPrefix , 'all/class/' , class name.
 	WebBrowser openOn: url
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #dispatching }
 Elucidator >> openBrowserOnPackage: packageName [
 	| url |
 	url := self httpPrefix , 'all/package/' , packageName.
@@ -226,7 +229,7 @@ Elucidator >> sample: html [
 					'I can elucidate packages or classes. Elucidation of <a href="http://localhost:20203/all/package/teapot">the package teapot</a>' ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 Elucidator >> socketNumber [
 	"random socketNumber, just the year and month I wrote this code"
 	^ 20203

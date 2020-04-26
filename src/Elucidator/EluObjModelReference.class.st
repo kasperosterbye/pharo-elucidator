@@ -21,8 +21,7 @@ Class {
 
 { #category : #accessing }
 EluObjModelReference >> arrowType [
-	kind = #singleton 
-		ifTrue: [ ^ ' ..> ' ].
+
 	^ ' --> '
 ]
 

@@ -43,14 +43,6 @@ Elucidation >> elucidatePackage: subject html: html [
 ]
 
 { #category : #'helper methods' }
-Elucidation >> findClass: className [
-	"find class based on class name. Take care with meta classes which has a space in their name"
-
-	^ (className copyReplaceAll: ' class' with: '') asClass.
-	
-]
-
-{ #category : #'helper methods' }
 Elucidation >> findPackage: packageName [
 	"find package based on packageName. Ignore case and implementation class"
 	| allNames |

@@ -17,7 +17,6 @@ Class {
 		'obj',
 		'model',
 		'entityId',
-		'pseudoObject',
 		'range'
 	],
 	#category : #'Elucidator-ObjectDiagram'
@@ -34,12 +33,12 @@ EluObjModelEntity class >> on: obj in: model [
 		model: model
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #analysis }
 EluObjModelEntity >> analyzeDestinationRange [
 	self subclassResponsibility 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #analysis }
 EluObjModelEntity >> analyzeRange [
 	"I add sources and destinations to this entity"
 
@@ -48,7 +47,7 @@ EluObjModelEntity >> analyzeRange [
 	self analyzeDestinationRange
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #analysis }
 EluObjModelEntity >> analyzeSourceRange [
 	| sourceObjects accessors|
 	(obj class category beginsWith: 'Kernel')
@@ -96,18 +95,6 @@ EluObjModelEntity >> destinations: anObject [
 ]
 
 { #category : #accessing }
-EluObjModelEntity >> destinationsAt: accessor put: value [
-	"add an outgoing ref from me to the entity for value"
-	| destination ref |
-	destination := model entityFor: value.
-	ref := EluObjModelReference new
-		source: self -> accessor;
-		destination: destination;
-		model: model.
-	model refs add: ref.
-]
-
-{ #category : #accessing }
 EluObjModelEntity >> destinationsAt: accessor putEntity: destination [
 	"add an outgoing ref from me to the entity for value"
 	| ref |
@@ -137,12 +124,6 @@ EluObjModelEntity >> isCollection [
 	^ false
 ]
 
-{ #category : #testing }
-EluObjModelEntity >> isPartOfPresentation [
-	pseudoObject ifNotNil: [ ^false ].
-	^ (model presentationFilter presentationCheck: obj)
-]
-
 { #category : #accessing }
 EluObjModelEntity >> model [
 	^ model
@@ -168,7 +149,7 @@ EluObjModelEntity >> obj: anObject [
 	obj := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #writing }
 EluObjModelEntity >> packageHtmlLink [
 	| packageName |
 	packageName := self packageName.
@@ -202,16 +183,6 @@ EluObjModelEntity >> printOn: stream [
 ]
 
 { #category : #accessing }
-EluObjModelEntity >> pseudoObject [
-	^ pseudoObject
-]
-
-{ #category : #accessing }
-EluObjModelEntity >> pseudoObject: anObject [
-	pseudoObject := anObject
-]
-
-{ #category : #accessing }
 EluObjModelEntity >> range [
 	^ range
 ]
@@ -226,7 +197,7 @@ EluObjModelEntity >> sourceEntities [
 	^ sources collect: [ :ref | ref source key ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 EluObjModelEntity >> sourceObjects [
 	^ self destinations collect: [ :ref | ref destination obj ]
 ]
