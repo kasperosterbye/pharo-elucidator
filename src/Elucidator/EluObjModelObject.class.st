@@ -10,15 +10,15 @@ Class {
 
 { #category : #'as yet unclassified' }
 EluObjModelObject >> analyzeDestinationRange [
-	| accessors |
+	"I create destinations for my obj. I create one destination for each instance variable"
+
 	obj isClass
 		ifTrue: [ ^ self ].
-	accessors := obj class
-		in: [ :c | c allSelectors & c allInstVarNames ].
-	accessors
+	obj class allInstVarNames
 		do: [ :accessor | 
 			| destination |
 			destination := model entityFor: (obj instVarNamed: accessor).
+			destination setAsDestination .
 			destination range: (range - 1 max: destination range).
 			self destinationsAt: accessor putEntity: destination ]
 ]

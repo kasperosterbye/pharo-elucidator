@@ -18,7 +18,7 @@ Elucidator class >> classFromHtmlName: className [
 	"meta classes might end with ' class' or '_class'. Return the class"
 
 	((className endsWith: ' class') or: [ className endsWith: '_class' ])
-		ifTrue: [ ^ (className allButLast: 5) asClass class  ]
+		ifTrue: [ ^ (className allButLast: 6) asClass class ]
 		ifFalse: [ ^ className asClass ]
 ]
 

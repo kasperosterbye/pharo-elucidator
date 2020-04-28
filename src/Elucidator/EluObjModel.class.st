@@ -157,6 +157,7 @@ EluObjModel >> range: range from: root [
 	(self entityFor: root)
 		in: [ :ent | 
 			ent range: range.
+			ent setAsRoot.
 			unVisited add: ent ].
 	[ unVisited notEmpty ]
 		whileTrue: [ | entity |
