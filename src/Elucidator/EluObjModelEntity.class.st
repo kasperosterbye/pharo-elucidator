@@ -218,7 +218,7 @@ EluObjModelEntity >> range: anObject [
 
 { #category : #initialization }
 EluObjModelEntity >> setAsDestination [
-	kind := #destination
+	kind ifNil: [kind := #destination]
 ]
 
 { #category : #initialization }
@@ -228,7 +228,7 @@ EluObjModelEntity >> setAsRoot [
 
 { #category : #initialization }
 EluObjModelEntity >> setAsSource [
-	kind := #source
+	kind ifNil: [kind := #source]
 ]
 
 { #category : #accessing }

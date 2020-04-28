@@ -136,7 +136,7 @@ EluObjModel >> id: newId [
 
 { #category : #initialization }
 EluObjModel >> initialize [
-	entities := Dictionary new.
+	entities := IdentityDictionary new.
 	refs := OrderedCollection new.
 	entityCounter := 0
 ]
