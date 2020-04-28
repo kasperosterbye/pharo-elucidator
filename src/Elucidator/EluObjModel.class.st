@@ -136,7 +136,7 @@ EluObjModel >> id: newId [
 
 { #category : #initialization }
 EluObjModel >> initialize [
-	entities := Dictionary new.
+	entities := IdentityDictionary new.
 	refs := OrderedCollection new.
 	entityCounter := 0
 ]
@@ -157,6 +157,7 @@ EluObjModel >> range: range from: root [
 	(self entityFor: root)
 		in: [ :ent | 
 			ent range: range.
+			ent setAsRoot.
 			unVisited add: ent ].
 	[ unVisited notEmpty ]
 		whileTrue: [ | entity |

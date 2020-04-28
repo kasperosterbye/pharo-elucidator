@@ -17,7 +17,8 @@ Class {
 		'obj',
 		'model',
 		'entityId',
-		'range'
+		'range',
+		'kind'
 	],
 	#category : #'Elucidator-ObjectDiagram'
 }
@@ -44,34 +45,45 @@ EluObjModelEntity >> analyzeRange [
 
 	range <= 0
 		ifTrue: [ ^ self ].
-	self analyzeDestinationRange
+	"do not analyze sources for destinations"
+	self isDestination ifTrue: [ self analyzeDestinationRange ].
+	self isSource ifTrue: [ self analyzeSourceRange ]
+		
+		
 ]
 
 { #category : #analysis }
 EluObjModelEntity >> analyzeSourceRange [
-	| sourceObjects accessors|
+	| sourceObjects |
 	(obj class category beginsWith: 'Kernel')
-		ifTrue: [ ^self ].
-	sourceObjects := obj pointersToExcept: { self. self model entities }.
-	sourceObjects := sourceObjects reject: [ :s | s isKindOf: Context ].
-	sourceObjects := sourceObjects first: (sourceObjects size min: 15).
-	sourceObjects do: [ :object | |sourceEntity|
-		accessors := object class allInstVarNames.
-		accessors ifEmpty: [ "a collection"
+		ifTrue: [ ^ self ].
+	sourceObjects := obj pointersToExcept: {self}.
+	sourceObjects := sourceObjects
+		reject: [ :s | s class package name = #Kernel ].
+	sourceObjects := sourceObjects first: (sourceObjects size min: 7).
+	sourceObjects
+		do: [ :object | 
+			| sourceEntity |
 			sourceEntity := model entityFor: object.
-			sourceEntity range: (range-1 max: sourceEntity range).
-			sourceEntity destinationsAt: 'Index' putEntity: self.
-			 ] 
-		ifNotEmpty: [ 
-			accessors 
-				detect: [ :ivName | (object instVarNamed: ivName) = obj ]
-				ifFound: [ :ivName | 
-					sourceEntity := model entityFor: object.
-					sourceEntity range: (range-1 max: sourceEntity range).
-					sourceEntity destinationsAt: ivName putEntity: self.
-					 ]
-			 ]
-		]. 
+			sourceEntity range: (range - 1 max: sourceEntity range).
+			sourceEntity setAsSource.
+			object isCollection
+				ifTrue: [ sourceEntity destinationsAt: 'Index' putEntity: self ]
+				ifFalse: [ object class allInstVarNames
+						detect: [ :ivName | (object instVarNamed: ivName) = obj ]
+						ifFound: [ :ivName | sourceEntity destinationsAt: ivName putEntity: self ] ] ]
+]
+
+{ #category : #accessing }
+EluObjModelEntity >> color [
+	"return a plantuml color depending on kind"
+
+	kind = #destination
+		ifTrue: [ ^ ' #lightgreen' ].
+	kind = #source
+		ifTrue: [ ^ ' #lightblue' ].
+	kind = #root
+		ifTrue: [ ^ ' #BBBBBB' ]
 ]
 
 { #category : #accessing }
@@ -114,14 +126,26 @@ EluObjModelEntity >> entityId [
 { #category : #initialization }
 EluObjModelEntity >> initialize [
 	sources := OrderedCollection new.
-	destinations  := OrderedCollection  new.
-	range := 0.
-	
+	destinations := OrderedCollection new.
+	range := 0
 ]
 
 { #category : #testing }
 EluObjModelEntity >> isCollection [
 	^ false
+]
+
+{ #category : #accessing }
+EluObjModelEntity >> isDestination [
+	"kind can be #root, #source or #destination"
+
+	^ kind ~= #source
+]
+
+{ #category : #accessing }
+EluObjModelEntity >> isSource [
+	"kind can be #root, #source or #destination"
+	^ kind ~= #destination 
 ]
 
 { #category : #accessing }
@@ -192,6 +216,22 @@ EluObjModelEntity >> range: anObject [
 	range := anObject
 ]
 
+{ #category : #initialization }
+EluObjModelEntity >> setAsDestination [
+	kind ifNil: [kind := #destination]
+]
+
+{ #category : #initialization }
+EluObjModelEntity >> setAsRoot [
+	kind := #root
+]
+
+{ #category : #initialization }
+EluObjModelEntity >> setAsSource [
+	kind ifNil: [ 
+	kind := #source]
+]
+
 { #category : #accessing }
 EluObjModelEntity >> sourceEntities [
 	^ sources collect: [ :ref | ref source key ]
@@ -222,7 +262,8 @@ EluObjModelEntity >> url [
 { #category : #accessing }
 EluObjModelEntity >> writeUmlOn: out [
 	"produce 'object URL as ID"
-	(out << 'object "' << self url << '" as ')
-		<< self printNameNoSpace;
+
+	out << 'object "' << self url << '" as ' << self printNameNoSpace
+		<< self color;
 		cr
 ]

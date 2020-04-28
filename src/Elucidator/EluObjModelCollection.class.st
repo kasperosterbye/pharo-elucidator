@@ -8,8 +8,10 @@ Class {
 	#category : #'Elucidator-ObjectDiagram'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #analysis }
 EluObjModelCollection >> analyzeDestinationRange [
+	"I create destinations for my obj. I create one destination for each of my elements (up to 7)"
+
 	| count |
 	(obj class inheritsFrom: String)
 		ifTrue: [ ^ self ].
@@ -18,6 +20,7 @@ EluObjModelCollection >> analyzeDestinationRange [
 		do: [ :elem | 
 			| destination |
 			destination := model entityFor: elem.
+			destination setAsDestination.
 			destination range: (range - 1 max: destination range).
 			self destinationsAt: 'Index' putEntity: destination.
 			count := count - 1.
