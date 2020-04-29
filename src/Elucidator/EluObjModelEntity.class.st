@@ -57,7 +57,8 @@ EluObjModelEntity >> analyzeSourceRange [
 	| sourceObjects |
 	(obj class category beginsWith: 'Kernel')
 		ifTrue: [ ^ self ].
-	sourceObjects := obj pointersToExcept: {self}.
+	sourceObjects := obj
+		pointersToExcept: {self}.
 	sourceObjects := sourceObjects
 		reject: [ :s | s class package name = #Kernel ].
 	sourceObjects := sourceObjects first: (sourceObjects size min: 7).
@@ -83,7 +84,7 @@ EluObjModelEntity >> color [
 	kind = #source
 		ifTrue: [ ^ ' #lightblue' ].
 	kind = #root
-		ifTrue: [ ^ ' #lightred' ]
+		ifTrue: [ ^ ' #FFAAAA' ]
 ]
 
 { #category : #accessing }
