@@ -54,13 +54,13 @@ EluObjModelEntity >> analyzeRange [
 
 { #category : #analysis }
 EluObjModelEntity >> analyzeSourceRange [
-	| sourceObjects |
-	(obj class category beginsWith: 'Kernel')
+	| sourceObjects ignorePackages|
+	(obj class category beginsWith: 'Kernel') 
 		ifTrue: [ ^ self ].
-	sourceObjects := obj
-		pointersToExcept: {self}.
+	sourceObjects := obj pointersToExcept: {self}.
+	ignorePackages := #('Kernel' 'Collections' 'Elucidator' 'Glamour').
 	sourceObjects := sourceObjects
-		reject: [ :s | s class package name = #Kernel ].
+		reject: [ :s | ignorePackages includes: (s class package name copyUpTo: $-)].
 	sourceObjects := sourceObjects first: (sourceObjects size min: 7).
 	sourceObjects
 		do: [ :object | 
