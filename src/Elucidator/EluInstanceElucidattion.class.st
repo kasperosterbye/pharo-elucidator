@@ -10,12 +10,12 @@ EluInstanceElucidattion >> diagramLinksFor: aClass html: html [
 
 	"create links of the form 'objdiagram/<class>/<range>'"
 
-	html raw: ' Diagrams for random instance. Diagram range: '.
+	html << ' Diagrams for random instance. Diagram range: '.
 	1 to: 5 do: [ :range | 
 		html
 			elucidateLink: range printString
 				to: 'objdiagram/' , aClass name , '/' , range printString;
-			raw: ' ' ]
+			<< ' ' ]
 ]
 
 { #category : #elucidation }
@@ -33,16 +33,17 @@ EluInstanceElucidattion >> elucidatePackage: subject html: html [
 	| top10 |
 	top10 := self topTenInstanceClassesIn: subject.
 	top10 first value = 0
-		ifTrue: [ html part: 'No instances of any class in project ' , (self projectName: subject).
+		ifTrue: [ html
+				part: 'No instances of any class in project ' , (self projectName: subject).
 			^ self ].
 	html part: 'Instances of classes in project'.
 	html
 		ulist: [ top10
 				do: [ :assoc | 
 					html
-						item: [ html classBrowseLink: assoc key.
+						item: [ html classBrowseLink: assoc key name.
 							html
-								raw: assoc key name , ' instances: ' , assoc value printString ] ] ]
+								<< (assoc key name , ' instances: ' , assoc value printString) ] ] ]
 ]
 
 { #category : #elucidation }
@@ -50,7 +51,8 @@ EluInstanceElucidattion >> elucidateProject: subject html: html [
 	| top10 project |
 	project := EluProject fromPackageName: subject.
 	top10 := self topTenInstanceClassesInProject: project.
-	top10 ifEmpty: [ html
+	top10
+		ifEmpty: [ html
 				part: 'No instances of any class in project ' , (self projectName: subject).
 			^ self ].
 	html part: 'Instances of classes in ' , project name.
@@ -58,9 +60,9 @@ EluInstanceElucidattion >> elucidateProject: subject html: html [
 		ulist: [ top10
 				do: [ :assoc | 
 					html
-						item: [ html classBrowseLink: assoc key.
+						item: [ html classBrowseLink: assoc key name.
 							html
-								raw: assoc key name , ' instances: ' , assoc value printString , '. '.
+								<< (assoc key name , ' instances: ' , assoc value printString , '. ').
 							self diagramLinksFor: assoc key html: html ] ] ].
 	top10 size = 10
 		ifTrue: [ html

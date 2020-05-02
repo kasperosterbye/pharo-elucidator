@@ -4,7 +4,22 @@ Class {
 	#category : #'Elucidator-Core'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
+EluAnnouncerElucidattion >> anyAnnouncementsIn: packageName [
+	^(self findAnnouncerMatrixFor: packageName) isNotEmpty | 
+	(self findSubscriberMatrixFor: packageName) isNotEmpty 
+]
+
+{ #category : #elucidation }
+EluAnnouncerElucidattion >> elucidatePackage: subject html: html [
+	(self anyAnnouncementsIn: subject)
+		ifFalse: [ html part: 'No annoucement info for package ' , subject.
+			^ self ].
+	html part: 'Annoucements announced or handled'.
+	self renderCombinedMatrixForPackage: subject on: html
+]
+
+{ #category : #'helper methods' }
 EluAnnouncerElucidattion >> findAnnouncementsClassIn: ast [
 	"return all literal Annoucements classes in ast"
 
@@ -19,14 +34,7 @@ EluAnnouncerElucidattion >> findAnnouncementsClassIn: ast [
 				]]
 ]
 
-{ #category : #'as yet unclassified' }
-EluAnnouncerElucidattion >> findAnnouncementsIn: packageName [
-	"return the set of announcements defined in this package"
-	^Announcement allSubclasses select: [ :cl | cl package name beginsWith:  packageName ]
-	
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluAnnouncerElucidattion >> findAnnouncerMatrixFor: packageName [
 	"I return a collection of Announcement, Announcer, anouncersenderSelector triplets. "
 
@@ -56,14 +64,7 @@ EluAnnouncerElucidattion >> findAnnouncerMatrixFor: packageName [
 			[ :a :b | (a first , ' ' , a second) < (b first , ' ' , b second) ]
 ]
 
-{ #category : #'as yet unclassified' }
-EluAnnouncerElucidattion >> findAnnouncersIn: package [
-	"return a collection of associations obj->ivName where obj store an announcer in that iv. Only return objects which are instances of classes in package"
-
-	Announcer allInstances collect: [ :announcer | 7 ]
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluAnnouncerElucidattion >> findSubscriberMatrixFor: packageName [
 	"Most subscriptions follow this pattern when: Annoucement send: selector to: self. Those not following this pattern will be ignored (TODO: find a way to handle this)"
 
@@ -90,15 +91,18 @@ EluAnnouncerElucidattion >> findSubscriberMatrixFor: packageName [
 	^ triplets
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluAnnouncerElucidattion >> renderCell: info at: indexAtMax on: html [
 	| index max size |
 	index := indexAtMax x.
 	max := indexAtMax y.
 	size := info size.
 	index - 1 < size
-		ifTrue: [ html tag: 'td' do: [ html << (info at: index) second ].
-			html tag: 'td' do: [ html << (info at: index) third ] ].
+		ifTrue:
+			[ html tag: 'td' do: [ html pharoClass: (info at: index) second ].
+			html
+				tag: 'td'
+				do: [ html pharoClass: (info at: index) second selector:  (info at: index) third] ].
 	index - 1 = size
 		ifTrue: [ 2
 				timesRepeat: [ html
@@ -109,71 +113,32 @@ EluAnnouncerElucidattion >> renderCell: info at: indexAtMax on: html [
 						do: [ html << '&nbsp;' ] ] ]
 ]
 
-{ #category : #rendering }
+{ #category : #'helper methods' }
 EluAnnouncerElucidattion >> renderCombinedMatrixForPackage: packageName on: html [
-	| str firstColumn announcers subscribers announcements |
+
+	| announcers subscribers announcements |
 	announcers := (self findAnnouncerMatrixFor: packageName)
 		groupedBy: #first.
 	subscribers := (self findSubscriberMatrixFor: packageName)
 		groupedBy: #first.
 	announcements := (announcers keys union: subscribers keys) asSet
 		asSortedCollection.
-	str := html htmlStream.
-	str
+	html
 		tag: 'table'
-		do: [ str
+		do: [ html
 				tag: 'tr'
 				do: [ {'Announcer' . 'annoucing method' . 'Announcement' . 'Subscriber'.
-					'via method'} do: [ :header | str tag: 'th' with: header ] ].
-			str << String cr.
+					'via method'} do: [ :header | html tag: 'th' with: header ] ].
+			html << String cr.
 			announcements
 				do: [ :announcement | 
 					| ann subs |
 					ann := announcers at: announcement ifAbsent: [ #() ].
 					subs := subscribers at: announcement ifAbsent: [ #() ].
-					self renderRowWith: ann and: subs on: str ] ].
-	^ html htmlString
+					self renderRowWith: ann and: subs on: html ] ].
 ]
 
-{ #category : #rendering }
-EluAnnouncerElucidattion >> renderMatrix: collection on: html headings: headers [
-	"<style>
-table, th, td{
-  border: 1px solid black;
-}
-</style>"
-	| str firstColumn |
-	str := html htmlStream.
-	str
-		tag: 'table'
-		do: [ str
-				tag: 'tr'
-				do: [ headers do: [ :header | str tag: 'th' with: header ] ].
-			firstColumn := collection groupedBy: [ :triplet | triplet first ].
-			firstColumn
-				keysAndValuesDo: [ :key :values | 
-					html htmlStream
-						tag: 'tr'
-						do: [ html htmlStream
-								tag: 'td'
-								attributes:
-									{'rowspan'.
-									values size}
-								do: [ html htmlStream
-										<< key;
-										tag: 'td' with: values first second;
-										tag: 'td' with: values first third ].
-							values allButFirst
-								do: [ :arr | 
-									html htmlStream
-										tag: 'tr'
-										do: [ html htmlStream
-												tag: 'td' with: arr second;
-												tag: 'td' with: arr third ] ] ] ] ].
-	^ html htmlString
-]
-
-{ #category : #rendering }
+{ #category : #'helper methods' }
 EluAnnouncerElucidattion >> renderRowWith: ann and: subs on: html [
 	"Ann is a list of the form (Announcement Announcer selector), subs on the form (Announcement Subscriber selector"
 
@@ -193,7 +158,7 @@ EluAnnouncerElucidattion >> renderRowWith: ann and: subs on: html [
 							attributes:
 								{'rowspan'.
 								max}
-							do: [ html << announcement ] ].
+							do: [ html pharoClass: announcement ] ].
 				self renderCell: subs at: index @ max on: html ].
 		html << String cr ]
 ]

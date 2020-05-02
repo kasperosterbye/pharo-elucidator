@@ -1,9 +1,6 @@
 Class {
 	#name : #ElucidationBrush,
-	#superclass : #Object,
-	#instVars : [
-		'stream'
-	],
+	#superclass : #ZnHtmlOutputStream,
 	#category : #'Elucidator-Core'
 }
 
@@ -60,9 +57,8 @@ ElucidationBrush >> browseClassCommentLink: aClass [
 ]
 
 { #category : #'html rendering' }
-ElucidationBrush >> classBrowseLink: aClass [
-	self
-		elucidateLinkTo: 'browseClass/' , aClass name
+ElucidationBrush >> classBrowseLink: className [
+	self elucidateLinkTo: 'browseClass/' , className
 ]
 
 { #category : #'html rendering' }
@@ -83,8 +79,8 @@ ElucidationBrush >> elucidateLinkTo: anchor [
 { #category : #'html rendering' }
 ElucidationBrush >> heading: title [
 	title isBlock
-		ifTrue: [ stream tag: 'h3' do: title]
-		ifFalse: [ stream tag: 'h3' do: [ stream << title.] ]
+		ifTrue: [ self tag: 'h3' do: title ]
+		ifFalse: [ self tag: 'h3' do: [ self << title ] ]
 ]
 
 { #category : #'html rendering' }
@@ -99,19 +95,19 @@ ElucidationBrush >> htmlStream [
 
 { #category : #'response transformers' }
 ElucidationBrush >> htmlString [
-	^ stream flush wrappedStream contents
+	^ stream flush; contents
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> item: string [
 	string isBlock
-		ifTrue: [ stream tag: 'li' do: string ]
-		ifFalse: [ stream tag: 'li' do: [ stream << string ] ]
+		ifTrue: [ self tag: 'li' do: string ]
+		ifFalse: [ self tag: 'li' do: [ self << string ] ]
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> link: string to: anchor [
-	stream tag: 'a' attributes: {'href'. anchor} do: [ stream << string ]
+	self tag: 'a' attributes: {'href'. anchor} do: [ self << string ]
 ]
 
 { #category : #'html rendering' }
@@ -119,56 +115,99 @@ ElucidationBrush >> methodBrowseLink: aMethod [
 	self elucidateLinkTo: 'browseMethod/' , aMethod methodClass name, '/', aMethod selector
 ]
 
-{ #category : #'instance creation' }
-ElucidationBrush >> on: aZnHtmlOutputStream [
-	stream := aZnHtmlOutputStream.
+{ #category : #'html rendering' }
+ElucidationBrush >> methodBrowseLink: selector inClass: className [
+	self
+		elucidateLinkTo: 'browseMethod/' , className , '/' ,  selector
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> page: title do: aBlock [
-	stream
+	self
 		html5;
 		tag: #html
-			do: [ stream
+			do: [ self
 				tag: #head
-					do: [ stream tag: #title with: title.
-					stream << self class style ];
+					do: [ self tag: #title with: title.
+					self << self class style ];
 				tag: #body
-					do: [ stream tag: #h1 with: title.
+					do: [ self tag: #h1 with: title.
 					aBlock value ] ]
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> par: paragraphText [
 	"format paragraphText using its existing line-breaks"
-	
-	stream
+
+	self
 		tag: 'p'
 		attributes: {'style' . 'white-space: pre-line;'}
-		do: [ stream << paragraphText trim ]
+		do: [ self << paragraphText trim ]
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> part: title [
 	title isBlock
-		ifTrue: [ stream tag: 'h2' do: title ]
-		ifFalse: [ stream tag: 'h2' do: [ stream << title ] ].
-	stream tag: 'hr'
+		ifTrue: [ self tag: 'h2' do: title ]
+		ifFalse: [ self tag: 'h2' do: [ self << title ] ].
+	self tag: 'hr'
 ]
 
-{ #category : #'as yet unclassified' }
-ElucidationBrush >> raw: txt [
-	stream << txt
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoClass: className [
+	"I produce an anchor of the form '<logo> className', with the logo being a browseLink to className"
+
+	self
+		link: self pharoLogo
+		to: Elucidator instance httpPrefix , 'browseClass/' , className.
+	self tag: 'em' with: className
+]
+
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoClass: className selector: selector [
+	"I produce an anchor of the form '<logo> selector', with the logo being a browseLink to className>>selector"
+
+	self
+		link: self pharoLogo
+		to:
+			Elucidator instance httpPrefix , 'browseMethod/' , className , '/'
+				, selector.
+	self tag: 'em' with: selector
+]
+
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoClassComment: className [
+	"I produce an anchor of the form '<logo> className', with the logo being a browseLink to className"
+
+	self
+		link: self pharoLogo
+		to: Elucidator instance httpPrefix , 'browseClassComment/' , className.
+	self tag: 'em' with: className
+]
+
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoHelp: className [
+	"I produce an anchor of the form '<logo> className', with the logo being a browseLink to className"
+
+	self
+		link: self pharoLogo
+		to: Elucidator instance httpPrefix , 'helpBrowse/' , className.
+	self tag: 'em' with: className
+]
+
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoLogo [
+	^ '<img src="https://avatars1.githubusercontent.com/u/1838382?s=12">'
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> section: title [
 	title isBlock
-		ifTrue: [ stream tag: 'h4' do: title ]
-		ifFalse: [ stream tag: 'h4' do: [ stream << title ] ]
+		ifTrue: [ self tag: 'h4' do: title ]
+		ifFalse: [ self tag: 'h4' do: [ self << title ] ]
 ]
 
 { #category : #'html rendering' }
 ElucidationBrush >> ulist: block [
-	stream tag: 'ul' do: block
+	self tag: 'ul' do: block
 ]

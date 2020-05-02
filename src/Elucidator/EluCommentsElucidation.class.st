@@ -105,8 +105,8 @@ EluCommentsElucidation >> renderClassComments: classComments on: html [
 			pair value
 				ifNotEmpty: [ "do not print empty comments"
 					html
-						section: [ html classBrowseLink: pair key.
-							html htmlStream << pair key name << ' comment:' ];
+						section: [ html classBrowseLink: pair key name.
+							html << pair key name << ' comment:' ];
 						par: pair value ] ]
 ]
 

@@ -12,7 +12,7 @@ EluExamplesElucidattion >> allClasses [
 	^ Object allSubclasses 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 EluExamplesElucidattion >> diagramLinksFor: aClass example: example html: html [
 	"Create links to sequence diagram of running the example"
 
@@ -39,7 +39,7 @@ EluExamplesElucidattion >> elucidateClass: class html: html [
 				do: [ :method | 
 					html
 						item: [ html methodBrowseLink: method.
-							html raw: method name.
+							html << method name.
 							(method selector isUnary and: [ method methodClass isMeta ])
 								ifTrue:
 									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
@@ -62,9 +62,9 @@ EluExamplesElucidattion >> elucidatePackage: subject html: html [
 				do: [ :method | 
 					html
 						item: [ html methodBrowseLink: method.
-							html raw: method name.
+							html << method name.
 							method comments
-								ifNotEmpty: [ :coms | html raw: '. <i>' , coms first lines first , '</i>' ] ] ] ]
+								ifNotEmpty: [ :coms | html << ('. <i>' , coms first lines first , '</i>') ] ] ] ]
 ]
 
 { #category : #elucidation }
@@ -83,7 +83,7 @@ EluExamplesElucidattion >> elucidateProject: subject html: html [
 				do: [ :method | 
 					html
 						item: [ html methodBrowseLink: method.
-							html raw: method name.
+							html << method name.
 							(method selector isUnary and: [ method methodClass isMeta ])
 								ifTrue:
 									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]

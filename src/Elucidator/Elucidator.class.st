@@ -149,8 +149,7 @@ Elucidator >> browseMethod: selector inClass: className [
 { #category : #dispatching }
 Elucidator >> dispatch: req [
 	| html |
-	html := ElucidationBrush new
-		on: (ZnHtmlOutputStream on: '' writeStream).
+	html := ElucidationBrush on: '' writeStream.
 	Elucidation dispatch: req on: html.
 	^ ZnResponse new
 		statusLine: ZnStatusLine ok;

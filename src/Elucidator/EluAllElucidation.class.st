@@ -23,7 +23,8 @@ EluAllElucidation >> elucidatePackage: subject html: html [
 	EluHelpElucidattion new elucidateProject: subject html: html.
 	EluExamplesElucidattion new elucidateProject: subject html: html.
 	EluInstanceElucidattion new elucidateProject: subject html: html.
-	EluCommentsElucidation new elucidatePackage: subject html: html
+	EluCommentsElucidation new elucidatePackage: subject html: html.
+	EluAnnouncerElucidattion new elucidatePackage: subject html: html
 ]
 
 { #category : #'as yet unclassified' }
@@ -31,8 +32,8 @@ EluAllElucidation >> headerForClass: class on: html [
 	"Write a header for class. Include a link to the project page"
 
 	| projName |
-	html raw: 'This class lives in the context of the project: '.
+	html << 'This class lives in the context of the project: '.
 	projName := self projectName: class package name.
 	html elucidateLink: projName to: 'all/package/' , projName.
-	html raw: String cr , '<hr>' , String cr
+	html << (String cr , '<hr>' , String cr)
 ]

@@ -31,8 +31,8 @@ EluHelpElucidattion >> elucidateProject: subject html: html [
 			html
 				section: [ html helpBrowserLink: helpclass.
 					html
-						raw:
-							helpclass bookName , ' topic 1 of ' , helpclass pages size printString
-								, ' - ' , helpTopic title ];
+						<<
+							(helpclass bookName , ' topic 1 of '
+								, helpclass pages size printString , ' - ' , helpTopic title) ];
 				par: helpTopic contents asString ]
 ]
