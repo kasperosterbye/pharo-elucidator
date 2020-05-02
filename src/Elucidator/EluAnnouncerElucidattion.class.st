@@ -28,7 +28,7 @@ EluAnnouncerElucidattion >> findAnnouncementsIn: packageName [
 
 { #category : #'as yet unclassified' }
 EluAnnouncerElucidattion >> findAnnouncerMatrixFor: packageName [
-	"I return a collection of Announcer, Announcement, anouncersenderSelector triplets. "
+	"I return a collection of Announcement, Announcer, anouncersenderSelector triplets. "
 
 	"I do this by finding all senders of #announce: in the package, and then try to find which announcement is sent. I first look in the arguments to announce:, and if no Announcement is found there, I look in the rest of the sender method"
 
@@ -47,13 +47,13 @@ EluAnnouncerElucidattion >> findAnnouncerMatrixFor: packageName [
 						do: [ :announcement | 
 							triplets
 								add:
-									{methodDef methodClass name.
-									announcement name .
+									{
+									announcement name.
+									methodDef methodClass name.
 									methodDef selector} ] ] ].
 	^ triplets
-		sort: [ :a :b | 
-			(a first  , ' ' , a second )
-				< (b first  , ' ' , b second ) ]
+		sort:
+			[ :a :b | (a first , ' ' , a second) < (b first , ' ' , b second) ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -88,6 +88,51 @@ EluAnnouncerElucidattion >> findSubscriberMatrixFor: packageName [
 							meth methodClass name.
 							send arguments second value} ] ].
 	^ triplets
+]
+
+{ #category : #'as yet unclassified' }
+EluAnnouncerElucidattion >> renderCell: info at: indexAtMax on: html [
+	| index max size |
+	index := indexAtMax x.
+	max := indexAtMax y.
+	size := info size.
+	index - 1 < size
+		ifTrue: [ html tag: 'td' do: [ html << (info at: index) second ].
+			html tag: 'td' do: [ html << (info at: index) third ] ].
+	index - 1 = size
+		ifTrue: [ 2
+				timesRepeat: [ html
+						tag: 'td'
+						attributes:
+							{'rowspan'.
+							(max - size)}
+						do: [ html << '&nbsp;' ] ] ]
+]
+
+{ #category : #rendering }
+EluAnnouncerElucidattion >> renderCombinedMatrixForPackage: packageName on: html [
+	| str firstColumn announcers subscribers announcements |
+	announcers := (self findAnnouncerMatrixFor: packageName)
+		groupedBy: #first.
+	subscribers := (self findSubscriberMatrixFor: packageName)
+		groupedBy: #first.
+	announcements := (announcers keys union: subscribers keys) asSet
+		asSortedCollection.
+	str := html htmlStream.
+	str
+		tag: 'table'
+		do: [ str
+				tag: 'tr'
+				do: [ {'Announcer' . 'annoucing method' . 'Announcement' . 'Subscriber'.
+					'via method'} do: [ :header | str tag: 'th' with: header ] ].
+			str << String cr.
+			announcements
+				do: [ :announcement | 
+					| ann subs |
+					ann := announcers at: announcement ifAbsent: [ #() ].
+					subs := subscribers at: announcement ifAbsent: [ #() ].
+					self renderRowWith: ann and: subs on: str ] ].
+	^ html htmlString
 ]
 
 { #category : #rendering }
@@ -126,4 +171,29 @@ table, th, td{
 												tag: 'td' with: arr second;
 												tag: 'td' with: arr third ] ] ] ] ].
 	^ html htmlString
+]
+
+{ #category : #rendering }
+EluAnnouncerElucidattion >> renderRowWith: ann and: subs on: html [
+	"Ann is a list of the form (Announcement Announcer selector), subs on the form (Announcement Subscriber selector"
+
+	| max announcement |
+	max := ann size max: subs size.
+	announcement := ann
+		ifNotEmpty: [ ann first first ]
+		ifEmpty: [ subs first first ].
+	html << ('<!---   ' , announcement , '   --->' , String cr).
+	1 to: max do: [ :index | 
+		html
+			tag: 'tr'
+			do: [ self renderCell: ann at: index @ max on: html.
+				index = 1
+					ifTrue: [ html
+							tag: 'td'
+							attributes:
+								{'rowspan'.
+								max}
+							do: [ html << announcement ] ].
+				self renderCell: subs at: index @ max on: html ].
+		html << String cr ]
 ]
