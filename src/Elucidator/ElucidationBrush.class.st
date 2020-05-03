@@ -1,3 +1,6 @@
+"
+I am an extension of the build in html brush. I add a few extras like heading types and pharo browse links.
+"
 Class {
 	#name : #ElucidationBrush,
 	#superclass : #ZnHtmlOutputStream,

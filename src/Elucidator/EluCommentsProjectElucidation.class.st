@@ -44,24 +44,6 @@ EluCommentsProjectElucidation >> contributes [
 	^packageComments notEmpty | classComments notEmpty
 ]
 
-{ #category : #elucidation }
-EluCommentsProjectElucidation >> elucidatePackage: packageName html: html [
-	"render the commentry for the package onto html"
-
-	| rPack packageComment classComments |
-	rPack := self findPackage: packageName.
-	rPack
-		ifNil: [ html part: 'No package named: ' , packageName.
-			^ self ].
-	html part: 'Comments for ', packageName.
-	packageComment := self packageCommentForPackage: rPack.
-	classComments := self classCommentsForPackage: rPack.
-	packageComment
-		ifEmpty: [ html heading: 'No package comment for ' , packageName ]
-		ifNotEmpty: [ self renderPackageComment: packageComment on: html ].
-	self renderClassComments: classComments on: html
-]
-
 { #category : #'instance creation' }
 EluCommentsProjectElucidation >> html: brush [
 	html := brush

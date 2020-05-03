@@ -74,6 +74,11 @@ Elucidator class >> elucidatePackage: packageName [
 	self instance openBrowserOnPackage: packageName
 ]
 
+{ #category : #elucidation }
+Elucidator class >> elucidateProject: packageName [ 
+	self instance openBrowserOnProject: (packageName copyUpTo: $-)
+]
+
 { #category : #utility }
 Elucidator class >> htmlNameForClass: aClass [
 	"meta classes print as 'String class', which can confuse plantuml."
@@ -211,6 +216,13 @@ Elucidator >> openBrowserOnClass: class [
 Elucidator >> openBrowserOnPackage: packageName [
 	| url |
 	url := self httpPrefix , 'all/package/' , packageName.
+	WebBrowser openOn: url
+]
+
+{ #category : #dispatching }
+Elucidator >> openBrowserOnProject: projectName [
+	| url |
+	url := self httpPrefix , 'all/project/' , projectName.
 	WebBrowser openOn: url
 ]
 

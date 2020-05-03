@@ -13,7 +13,7 @@ Class {
 	#instVars : [
 		'allMethods'
 	],
-	#category : #'Elucidator-Core'
+	#category : #'Elucidator-KeptForFutureUpdate'
 }
 
 { #category : #'helper methods' }

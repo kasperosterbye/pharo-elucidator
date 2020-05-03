@@ -2,5 +2,5 @@ Extension { #name : #ClassDescription }
 
 { #category : #'*Elucidator' }
 ClassDescription >> elucidate [
-	Elucidator elucidateClass: self
+	Elucidator elucidateProject: self package name
 ]

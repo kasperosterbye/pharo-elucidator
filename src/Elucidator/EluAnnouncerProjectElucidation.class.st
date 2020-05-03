@@ -34,15 +34,6 @@ EluAnnouncerProjectElucidation >> contributes [
 	^ announcers isNotEmpty | subscribers isNotEmpty 
 ]
 
-{ #category : #elucidation }
-EluAnnouncerProjectElucidation >> elucidatePackage: subject html: html [
-	(self anyAnnouncementsIn: subject)
-		ifFalse: [ html part: 'No annoucement info for package ' , subject.
-			^ self ].
-	html part: 'Annoucements announced or handled'.
-	self renderCombinedMatrixForPackage: subject on: html
-]
-
 { #category : #'helper methods' }
 EluAnnouncerProjectElucidation >> findAnnouncementsClassIn: ast [
 	"return all literal Annoucements classes in ast"

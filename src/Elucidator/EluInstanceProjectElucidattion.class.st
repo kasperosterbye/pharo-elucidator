@@ -1,8 +1,27 @@
+"
+I find information about the instances in the system. Often concrete instances help in the understanding of the general classes. In particular, I am able to help in making object diagrams from those instances.
+"
 Class {
 	#name : #EluInstanceProjectElucidattion,
 	#superclass : #Elucidation,
+	#instVars : [
+		'project',
+		'html',
+		'instanceExamples'
+	],
 	#category : #'Elucidator-Core'
 }
+
+{ #category : #elucidation }
+EluInstanceProjectElucidattion >> analyze [
+	instanceExamples  := self topTenInstanceClassesInProject: project.
+	
+]
+
+{ #category : #elucidation }
+EluInstanceProjectElucidattion >> contributes [ 
+	^ instanceExamples notEmpty 
+]
 
 { #category : #'as yet unclassified' }
 EluInstanceProjectElucidattion >> diagramLinksFor: aClass html: html [
@@ -18,55 +37,44 @@ EluInstanceProjectElucidattion >> diagramLinksFor: aClass html: html [
 			<< ' ' ]
 ]
 
-{ #category : #elucidation }
-EluInstanceProjectElucidattion >> elucidateClass: class html: html [
-	| instances |
-	instances := class allSubInstances.
-	instances
-		ifEmpty: [ html part: 'No instances of class in image'.
-			^ self ].
-	self diagramLinksFor: class html: html
+{ #category : #'instance creation' }
+EluInstanceProjectElucidattion >> html: brush [
+	html := brush 
+]
+
+{ #category : #'instance creation' }
+EluInstanceProjectElucidattion >> on: subject [
+	project := EluProject fromPackagePrefix: subject 
 ]
 
 { #category : #elucidation }
-EluInstanceProjectElucidattion >> elucidatePackage: subject html: html [
-	| top10 |
-	top10 := self topTenInstanceClassesIn: subject.
-	top10 first value = 0
-		ifTrue: [ html
-				part: 'No instances of any class in project ' , (self projectName: subject).
-			^ self ].
-	html part: 'Instances of classes in project'.
+EluInstanceProjectElucidattion >> renderMe [
+	
+	html part: 'Sample instances ' id: 'instances'.
 	html
-		ulist: [ top10
-				do: [ :assoc | 
-					html
-						item: [ html classBrowseLink: assoc key name.
-							html
-								<< (assoc key name , ' instances: ' , assoc value printString) ] ] ]
-]
-
-{ #category : #elucidation }
-EluInstanceProjectElucidattion >> elucidateProject: subject html: html [
-	| top10 project |
-	project := EluProject fromPackagePrefix: subject.
-	top10 := self topTenInstanceClassesInProject: project.
-	top10
-		ifEmpty: [ html
-				part: 'No instances of any class in project ' , (self projectName: subject).
-			^ self ].
-	html part: 'Instances of classes in ' , project name.
-	html
-		ulist: [ top10
+		ulist: [ instanceExamples 
 				do: [ :assoc | 
 					html
 						item: [ html classBrowseLink: assoc key name.
 							html
 								<< (assoc key name , ' instances: ' , assoc value printString , '. ').
 							self diagramLinksFor: assoc key html: html ] ] ].
-	top10 size = 10
+	instanceExamples size = 10
 		ifTrue: [ html
 				par: 'More instantiated classes might exist, only showing the top 10' ]
+]
+
+{ #category : #elucidation }
+EluInstanceProjectElucidattion >> synopsis [
+	html tag: 'li'
+	do: [
+	html << '<b>Instances:</b> '.
+	instanceExamples   
+		ifEmpty:  [html << 'no instances of any class in project found in image (It is an application library, not a system library?).' ] 
+		ifNotEmpty:  [ html << 'I found instances for: '  
+			<< instanceExamples size printString << ' classes (up to 10 picked). '.
+	html << 'I have collected class instances for those classes. '.
+	html << '<br>See instances <a href="#instances">further down</a>']]
 ]
 
 { #category : #'helper methods' }

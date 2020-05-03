@@ -25,34 +25,6 @@ EluHelpProjectElucidattion >> contributes [
 	^ help isNotEmpty 
 ]
 
-{ #category : #elucidation }
-EluHelpProjectElucidattion >> elucidatePackage: subject html: html [
-	self elucidateProject: (subject copyUpTo: $-) html: html
-]
-
-{ #category : #elucidation }
-EluHelpProjectElucidattion >> elucidateProject: subject html: html [
-	| project help |
-	project := EluProject fromPackagePrefix: subject.
-	help := CustomHelp allSubclasses
-		select: [ :cl | project packages includes: cl package ].
-	help
-		ifEmpty: [ html part: 'No pharo help defined for project ' , project name.
-			^ self ].
-	html part: 'System help for ' , project name.
-	help
-		do: [ :helpclass | 
-			| helpTopic |
-			helpTopic := helpclass perform: helpclass pages first.
-			html
-				section: [ html helpBrowserLink: helpclass.
-					html
-						<<
-							(helpclass bookName , ' topic 1 of '
-								, helpclass pages size printString , ' - ' , helpTopic title) ];
-				par: helpTopic contents asString ]
-]
-
 { #category : #'instance creation' }
 EluHelpProjectElucidattion >> html: brush [
 	html := brush

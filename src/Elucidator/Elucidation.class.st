@@ -18,7 +18,7 @@ Elucidation class >> dispatch: req on: html [
 	| elucidation |
 	elucidation := req at: #elucidation.
 	elucidation = #all
-		ifTrue: [ ^ EluAllElucidation new
+		ifTrue: [ ^ EluAllProjectElucidation new
 						handle: req
 						on: html ]
 ]
@@ -36,6 +36,8 @@ Elucidation >> contributes [
 
 { #category : #elucidation }
 Elucidation >> elucidate: subject scope: scope html: html [
+	scope = #project
+		ifTrue: [ ^ self elucidateProject: subject html: html ].
 	scope = #package
 		ifTrue: [ ^ self elucidatePackage: subject html: html ].
 	scope = #class
@@ -45,11 +47,16 @@ Elucidation >> elucidate: subject scope: scope html: html [
 
 { #category : #elucidation }
 Elucidation >> elucidateClass: subject html: html [
-	self subclassResponsibility
+	self error: 'Who called me - should not happen'.
 ]
 
 { #category : #elucidation }
 Elucidation >> elucidatePackage: subject html: html [ 
+	self error: 'Who called me, should not happen'.
+]
+
+{ #category : #elucidation }
+Elucidation >> elucidateProject: subject html: html [ 
 	self subclassResponsibility 
 ]
 

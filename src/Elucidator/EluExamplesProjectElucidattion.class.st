@@ -21,7 +21,6 @@ EluExamplesProjectElucidattion >> allClasses [
 EluExamplesProjectElucidattion >> analyze [
 	examples := self findExampleMethods
 		select: [ :meth | project packages includes: meth methodClass package ].
-	
 ]
 
 { #category : #elucidation }
@@ -38,72 +37,6 @@ EluExamplesProjectElucidattion >> diagramLinksFor: aClass example: example html:
 	html
 		elucidateLink: ' Sequence Diagram for example'
 		to: 'seqdiagram/' , aClass name , '/' , example selector
-]
-
-{ #category : #elucidation }
-EluExamplesProjectElucidattion >> elucidateClass: class html: html [
-	| examples |
-	examples := self findExampleMethods
-		select:
-			[ :meth | meth methodClass = class class or: [ meth methodClass inheritsFrom: class class] ].
-	examples
-		ifEmpty: [ html part: 'No examples in class ' , class name , ' or subclasses'.
-			^ self ].
-	html part: 'Example code for ' , class name.
-	" each item is on the form: pharoLink, class>>method, first line of comment if any"
-	html
-		ulist: [ examples
-				do: [ :method | 
-					html
-						item: [ html methodBrowseLink: method.
-							html << method name.
-							(method selector isUnary and: [ method methodClass isMeta ])
-								ifTrue:
-									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
-]
-
-{ #category : #elucidation }
-EluExamplesProjectElucidattion >> elucidatePackage: subject html: html [
-	| rPack examples |
-	self error: 'Need to be checked'.
-	rPack := self findPackage: subject.
-	examples := self findExampleMethods
-		select: [ :meth | meth methodClass package = rPack ].
-	examples
-		ifEmpty: [ html part: 'No examples in package ' , subject.
-			^ self ].
-	html part: 'Example code'.
-	" each item is on the form: pharoLink, class>>method, first line of comment if any"
-	html
-		ulist: [ examples
-				do: [ :method | 
-					html
-						item: [ html methodBrowseLink: method.
-							html << method name.
-							method comments
-								ifNotEmpty: [ :coms | html << ('. <i>' , coms first lines first , '</i>') ] ] ] ]
-]
-
-{ #category : #elucidation }
-EluExamplesProjectElucidattion >> elucidateProject: subject html: html [
-	| proj examples |
-	proj := EluProject fromPackagePrefix: subject.
-	examples := self findExampleMethods
-		select: [ :meth | proj packages includes: meth methodClass package ].
-	examples
-		ifEmpty: [ html part: 'No examples in project ' , proj name.
-			^ self ].
-	html part: 'Example code for ' , proj name.
-	" each item is on the form: pharoLink, class>>method, first line of comment if any"
-	html
-		ulist: [ examples
-				do: [ :method | 
-					html
-						item: [ html methodBrowseLink: method.
-							html << method name.
-							(method selector isUnary and: [ method methodClass isMeta ])
-								ifTrue:
-									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
 ]
 
 { #category : #'helper methods' }
