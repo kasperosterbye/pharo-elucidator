@@ -23,6 +23,17 @@ Elucidation class >> dispatch: req on: html [
 						on: html ]
 ]
 
+{ #category : #'as yet unclassified' }
+Elucidation class >> on: subject html: html [
+	^ self new on: subject; html: html; analyze
+]
+
+{ #category : #'as yet unclassified' }
+Elucidation >> contributes [
+	"return true if I have something to contribute to the elucidation of subject"
+	self subclassResponsibility 
+]
+
 { #category : #elucidation }
 Elucidation >> elucidate: subject scope: scope html: html [
 	scope = #package

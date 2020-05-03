@@ -1,17 +1,40 @@
+"
+!! Purpose
+
+I am a class to provide elucidation of a package. I find and present all Annoucements ==announced:== and all Announcements ==subscribed==
+"
 Class {
-	#name : #EluAnnouncerElucidattion,
+	#name : #EluAnnouncerPackageElucidation,
 	#superclass : #Elucidation,
+	#instVars : [
+		'packageName',
+		'announcers',
+		'subscribers',
+		'html'
+	],
 	#category : #'Elucidator-Core'
 }
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> anyAnnouncementsIn: packageName [
+EluAnnouncerPackageElucidation >> analyze [
+	announcers := self findAnnouncerMatrix.
+	subscribers := self findSubscriberMatrix
+]
+
+{ #category : #'helper methods' }
+EluAnnouncerPackageElucidation >> anyAnnouncementsIn: packageName [
 	^(self findAnnouncerMatrixFor: packageName) isNotEmpty | 
 	(self findSubscriberMatrixFor: packageName) isNotEmpty 
 ]
 
+{ #category : #'as yet unclassified' }
+EluAnnouncerPackageElucidation >> contributes [
+	"return true if I have something to contribute to the elucidation of subject"
+	^ announcers isNotEmpty | subscribers isNotEmpty 
+]
+
 { #category : #elucidation }
-EluAnnouncerElucidattion >> elucidatePackage: subject html: html [
+EluAnnouncerPackageElucidation >> elucidatePackage: subject html: html [
 	(self anyAnnouncementsIn: subject)
 		ifFalse: [ html part: 'No annoucement info for package ' , subject.
 			^ self ].
@@ -20,7 +43,7 @@ EluAnnouncerElucidattion >> elucidatePackage: subject html: html [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> findAnnouncementsClassIn: ast [
+EluAnnouncerPackageElucidation >> findAnnouncementsClassIn: ast [
 	"return all literal Annoucements classes in ast"
 
 	| allClasses |
@@ -35,16 +58,16 @@ EluAnnouncerElucidattion >> findAnnouncementsClassIn: ast [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> findAnnouncerMatrixFor: packageName [
+EluAnnouncerPackageElucidation >> findAnnouncerMatrix [
 	"I return a collection of Announcement, Announcer, anouncersenderSelector triplets. "
 
 	"I do this by finding all senders of #announce: in the package, and then try to find which announcement is sent. I first look in the arguments to announce:, and if no Announcement is found there, I look in the rest of the sender method"
 
-	| announcers triplets |
-	announcers := #announce: senders
+	| announceSenders triplets |
+	announceSenders := #announce: senders
 		select: [ :methodDef | methodDef package name beginsWith: packageName ].
 	triplets := OrderedCollection new.
-	announcers
+	announceSenders
 		do: [ :methodDef | 
 			methodDef ast sendNodes
 				select: [ :send | send selector = #announce: ]
@@ -55,17 +78,15 @@ EluAnnouncerElucidattion >> findAnnouncerMatrixFor: packageName [
 						do: [ :announcement | 
 							triplets
 								add:
-									{
-									announcement name.
+									{announcement name.
 									methodDef methodClass name.
 									methodDef selector} ] ] ].
 	^ triplets
-		sort:
-			[ :a :b | (a first , ' ' , a second) < (b first , ' ' , b second) ]
+		sort: [ :a :b | (a first , ' ' , a second) < (b first , ' ' , b second) ]
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> findSubscriberMatrixFor: packageName [
+EluAnnouncerPackageElucidation >> findSubscriberMatrix [
 	"Most subscriptions follow this pattern when: Annoucement send: selector to: self. Those not following this pattern will be ignored (TODO: find a way to handle this)"
 
 	"I return collection of triplets (Announcement, Subscriber, selector), where Subscriber is the class of self from the pattern"
@@ -92,17 +113,28 @@ EluAnnouncerElucidattion >> findSubscriberMatrixFor: packageName [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> renderCell: info at: indexAtMax on: html [
+EluAnnouncerPackageElucidation >> html: htmlStream [
+	html := htmlStream 
+]
+
+{ #category : #'helper methods' }
+EluAnnouncerPackageElucidation >> on: aPackageName [
+	packageName := aPackageName 
+]
+
+{ #category : #'helper methods' }
+EluAnnouncerPackageElucidation >> renderCell: info at: indexAtMax [ 
 	| index max size |
 	index := indexAtMax x.
 	max := indexAtMax y.
 	size := info size.
 	index - 1 < size
-		ifTrue:
-			[ html tag: 'td' do: [ html pharoClass: (info at: index) second ].
+		ifTrue: [ html tag: 'td' do: [ html pharoClass: (info at: index) second ].
 			html
 				tag: 'td'
-				do: [ html pharoClass: (info at: index) second selector:  (info at: index) third] ].
+				do: [ html
+						pharoClass: (info at: index) second
+						selector: (info at: index) third ] ].
 	index - 1 = size
 		ifTrue: [ 2
 				timesRepeat: [ html
@@ -114,15 +146,14 @@ EluAnnouncerElucidattion >> renderCell: info at: indexAtMax on: html [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> renderCombinedMatrixForPackage: packageName on: html [
-
-	| announcers subscribers announcements |
-	announcers := (self findAnnouncerMatrixFor: packageName)
-		groupedBy: #first.
-	subscribers := (self findSubscriberMatrixFor: packageName)
-		groupedBy: #first.
-	announcements := (announcers keys union: subscribers keys) asSet
-		asSortedCollection.
+EluAnnouncerPackageElucidation >> renderMe [
+	| groupedAnnouncers groupedSubscribers announcements |
+	groupedAnnouncers := announcers groupedBy: #first.
+	groupedSubscribers := subscribers groupedBy: #first.
+	announcements := (groupedAnnouncers keys
+		union: groupedSubscribers keys) asSet asSortedCollection.
+	html part: 'Announcements' id: 'announcements'.
+	html << 'The following table list all Announcements that I Announce in an #announce: method, or subscribes to in an #when:send:to: (or similar) method'.
 	html
 		tag: 'table'
 		do: [ html
@@ -133,13 +164,13 @@ EluAnnouncerElucidattion >> renderCombinedMatrixForPackage: packageName on: html
 			announcements
 				do: [ :announcement | 
 					| ann subs |
-					ann := announcers at: announcement ifAbsent: [ #() ].
-					subs := subscribers at: announcement ifAbsent: [ #() ].
-					self renderRowWith: ann and: subs on: html ] ].
+					ann := groupedAnnouncers at: announcement ifAbsent: [ #() ].
+					subs := groupedSubscribers at: announcement ifAbsent: [ #() ].
+					self renderRowWith: ann and: subs ] ]
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerElucidattion >> renderRowWith: ann and: subs on: html [
+EluAnnouncerPackageElucidation >> renderRowWith: ann and: subs [
 	"Ann is a list of the form (Announcement Announcer selector), subs on the form (Announcement Subscriber selector"
 
 	| max announcement |
@@ -151,7 +182,7 @@ EluAnnouncerElucidattion >> renderRowWith: ann and: subs on: html [
 	1 to: max do: [ :index | 
 		html
 			tag: 'tr'
-			do: [ self renderCell: ann at: index @ max on: html.
+			do: [ self renderCell: ann at: index @ max.
 				index = 1
 					ifTrue: [ html
 							tag: 'td'
@@ -159,6 +190,17 @@ EluAnnouncerElucidattion >> renderRowWith: ann and: subs on: html [
 								{'rowspan'.
 								max}
 							do: [ html pharoClass: announcement ] ].
-				self renderCell: subs at: index @ max on: html ].
+				self renderCell: subs at: index @ max ].
 		html << String cr ]
+]
+
+{ #category : #documenting }
+EluAnnouncerPackageElucidation >> synopsis [
+	self contributes 
+		ifFalse: [ html 
+			tag: 'li' 
+			do: [ html << '<b>Announcements:</b> It seems like this package do not announce or subscribe to any Announcements' ] ]
+		ifTrue: [ html 
+			tag: 'li' 
+			do: [ html << '<b>Announcements:</b> This package announce or subscribe to various annoucement. <br>See more <a href="#announcements">further down</a>' ] ]
 ]

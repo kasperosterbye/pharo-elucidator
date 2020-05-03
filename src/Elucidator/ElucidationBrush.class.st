@@ -153,6 +153,14 @@ ElucidationBrush >> part: title [
 	self tag: 'hr'
 ]
 
+{ #category : #'html rendering' }
+ElucidationBrush >> part: title id: id [
+	title isBlock
+		ifTrue: [ self tag: 'h2' attributes: {'id'. id} do: title ]
+		ifFalse: [ self 	tag: 'h2' attributes: {'id'.id} do: [ self << title ] ].
+	self tag: 'hr'
+]
+
 { #category : #'pharo links' }
 ElucidationBrush >> pharoClass: className [
 	"I produce an anchor of the form '<logo> className', with the logo being a browseLink to className"

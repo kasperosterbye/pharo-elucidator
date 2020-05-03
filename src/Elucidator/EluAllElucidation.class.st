@@ -20,11 +20,15 @@ EluAllElucidation >> elucidateClass: subject html: html [
 
 { #category : #'as yet unclassified' }
 EluAllElucidation >> elucidatePackage: subject html: html [
-	EluHelpElucidattion new elucidateProject: subject html: html.
-	EluExamplesElucidattion new elucidateProject: subject html: html.
-	EluInstanceElucidattion new elucidateProject: subject html: html.
-	EluCommentsElucidation new elucidatePackage: subject html: html.
-	EluAnnouncerElucidattion new elucidatePackage: subject html: html
+	| elucidations |
+	elucidations := {"EluHelpElucidattion  on: subject html: html.
+	EluExamplesElucidattion on: subject html: html.
+	EluInstanceElucidattion on: subject html: html."
+	EluCommentsPackageElucidation on: subject html: html.
+	EluAnnouncerPackageElucidation on: subject html: html}.
+	html tag:'ul' do: [ elucidations do: [ :el | el synopsis ]].
+	(elucidations select: [ :el | el contributes ]) do: [ :el | el renderMe ]
+	
 ]
 
 { #category : #'as yet unclassified' }
