@@ -13,7 +13,7 @@ EluAllElucidation >> elucidateClass: subject html: html [
 	| class |
 	class := Elucidator classFromHtmlName: subject.
 	self headerForClass: class on: html.
-	EluExamplesElucidattion new elucidateClass: class html: html.
+	EluExamplesProjectElucidattion new elucidateClass: class html: html.
 	EluInstanceElucidattion new elucidateClass: class html: html.
 	EluCommentsElucidation new elucidateClass: class html: html
 ]
@@ -21,14 +21,17 @@ EluAllElucidation >> elucidateClass: subject html: html [
 { #category : #'as yet unclassified' }
 EluAllElucidation >> elucidatePackage: subject html: html [
 	| elucidations |
-	elucidations := {"EluHelpElucidattion  on: subject html: html.
+	elucidations := {
+	EluCommentsProjectElucidation on: subject html: html.
+	EluAnnouncerProjectElucidation on: subject html: html.
+	EluExamplesProjectElucidattion   on: subject html: html}.
+	"
 	EluExamplesElucidattion on: subject html: html.
 	EluInstanceElucidattion on: subject html: html."
-	EluCommentsPackageElucidation on: subject html: html.
-	EluAnnouncerPackageElucidation on: subject html: html}.
-	html tag:'ul' do: [ elucidations do: [ :el | el synopsis ]].
-	(elucidations select: [ :el | el contributes ]) do: [ :el | el renderMe ]
 	
+	html tag: 'ul' do: [ elucidations do: [ :el | el synopsis ] ].
+	(elucidations select: [ :el | el contributes ])
+		do: [ :el | el renderMe ]
 ]
 
 { #category : #'as yet unclassified' }

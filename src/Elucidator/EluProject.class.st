@@ -21,12 +21,12 @@ EluProject class >> fromClass: aClass [
 
 { #category : #'instance creation' }
 EluProject class >> fromPackage: rPack [
-	^ self fromPackageName: rPack name
+	^ self fromPackagePrefix: rPack name
 ]
 
 { #category : #'instance creation' }
-EluProject class >> fromPackageName: pName [
-	^ self new fromPackageName: pName
+EluProject class >> fromPackagePrefix: pName [
+	^ self new fromPackagePrefix: pName
 ]
 
 { #category : #accessing }
@@ -35,7 +35,7 @@ EluProject >> classes [
 ]
 
 { #category : #'instance creation' }
-EluProject >> fromPackageName: packName [
+EluProject >> fromPackagePrefix: packName [
 	| allNames |
 	projectName := packName copyUpTo: $-.
 	allNames := RPackageOrganizer default packageNames

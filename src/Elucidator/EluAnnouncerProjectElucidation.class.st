@@ -4,10 +4,11 @@
 I am a class to provide elucidation of a package. I find and present all Annoucements ==announced:== and all Announcements ==subscribed==
 "
 Class {
-	#name : #EluAnnouncerPackageElucidation,
+	#name : #EluAnnouncerProjectElucidation,
 	#superclass : #Elucidation,
 	#instVars : [
 		'packageName',
+		'project',
 		'announcers',
 		'subscribers',
 		'html'
@@ -16,25 +17,25 @@ Class {
 }
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> analyze [
+EluAnnouncerProjectElucidation >> analyze [
 	announcers := self findAnnouncerMatrix.
 	subscribers := self findSubscriberMatrix
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> anyAnnouncementsIn: packageName [
+EluAnnouncerProjectElucidation >> anyAnnouncementsIn: packageName [
 	^(self findAnnouncerMatrixFor: packageName) isNotEmpty | 
 	(self findSubscriberMatrixFor: packageName) isNotEmpty 
 ]
 
 { #category : #'as yet unclassified' }
-EluAnnouncerPackageElucidation >> contributes [
+EluAnnouncerProjectElucidation >> contributes [
 	"return true if I have something to contribute to the elucidation of subject"
 	^ announcers isNotEmpty | subscribers isNotEmpty 
 ]
 
 { #category : #elucidation }
-EluAnnouncerPackageElucidation >> elucidatePackage: subject html: html [
+EluAnnouncerProjectElucidation >> elucidatePackage: subject html: html [
 	(self anyAnnouncementsIn: subject)
 		ifFalse: [ html part: 'No annoucement info for package ' , subject.
 			^ self ].
@@ -43,7 +44,7 @@ EluAnnouncerPackageElucidation >> elucidatePackage: subject html: html [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> findAnnouncementsClassIn: ast [
+EluAnnouncerProjectElucidation >> findAnnouncementsClassIn: ast [
 	"return all literal Annoucements classes in ast"
 
 	| allClasses |
@@ -58,14 +59,15 @@ EluAnnouncerPackageElucidation >> findAnnouncementsClassIn: ast [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> findAnnouncerMatrix [
+EluAnnouncerProjectElucidation >> findAnnouncerMatrix [
 	"I return a collection of Announcement, Announcer, anouncersenderSelector triplets. "
 
 	"I do this by finding all senders of #announce: in the package, and then try to find which announcement is sent. I first look in the arguments to announce:, and if no Announcement is found there, I look in the rest of the sender method"
 
 	| announceSenders triplets |
+	"Beware of methodDef realClass package - methodDef is a Ring, and the project packages are RPackage"
 	announceSenders := #announce: senders
-		select: [ :methodDef | methodDef package name beginsWith: packageName ].
+		select: [ :methodDef | project packages includes: methodDef realClass package ].
 	triplets := OrderedCollection new.
 	announceSenders
 		do: [ :methodDef | 
@@ -86,15 +88,16 @@ EluAnnouncerPackageElucidation >> findAnnouncerMatrix [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> findSubscriberMatrix [
+EluAnnouncerProjectElucidation >> findSubscriberMatrix [
 	"Most subscriptions follow this pattern when: Annoucement send: selector to: self. Those not following this pattern will be ignored (TODO: find a way to handle this)"
 
 	"I return collection of triplets (Announcement, Subscriber, selector), where Subscriber is the class of self from the pattern"
 
 	| patterns supscriptions triplets |
 	patterns := #(#when:send:to: #when:send:to:with: #when:send:to:withArguments:).
+	"Beware of methodDef realClass package - methodDef is a Ring, and the project packages are RPackage"
 	supscriptions := (patterns collect: [ :sel | sel senders ]) flattened
-		select: [ :methodDef | methodDef package name beginsWith: packageName ].
+		select: [ :methodDef | project packages includes: methodDef realClass package ].
 	"subscriptions are all methods in package which contain a subsription"
 	triplets := OrderedCollection new.
 	supscriptions
@@ -113,17 +116,17 @@ EluAnnouncerPackageElucidation >> findSubscriberMatrix [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> html: htmlStream [
+EluAnnouncerProjectElucidation >> html: htmlStream [
 	html := htmlStream 
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> on: aPackageName [
-	packageName := aPackageName 
+EluAnnouncerProjectElucidation >> on: aPackageName [
+	project := EluProject fromPackagePrefix: aPackageName .
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> renderCell: info at: indexAtMax [ 
+EluAnnouncerProjectElucidation >> renderCell: info at: indexAtMax [ 
 	| index max size |
 	index := indexAtMax x.
 	max := indexAtMax y.
@@ -146,7 +149,7 @@ EluAnnouncerPackageElucidation >> renderCell: info at: indexAtMax [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> renderMe [
+EluAnnouncerProjectElucidation >> renderMe [
 	| groupedAnnouncers groupedSubscribers announcements |
 	groupedAnnouncers := announcers groupedBy: #first.
 	groupedSubscribers := subscribers groupedBy: #first.
@@ -170,7 +173,7 @@ EluAnnouncerPackageElucidation >> renderMe [
 ]
 
 { #category : #'helper methods' }
-EluAnnouncerPackageElucidation >> renderRowWith: ann and: subs [
+EluAnnouncerProjectElucidation >> renderRowWith: ann and: subs [
 	"Ann is a list of the form (Announcement Announcer selector), subs on the form (Announcement Subscriber selector"
 
 	| max announcement |
@@ -195,7 +198,7 @@ EluAnnouncerPackageElucidation >> renderRowWith: ann and: subs [
 ]
 
 { #category : #documenting }
-EluAnnouncerPackageElucidation >> synopsis [
+EluAnnouncerProjectElucidation >> synopsis [
 	self contributes 
 		ifFalse: [ html 
 			tag: 'li' 

@@ -49,7 +49,7 @@ EluInstanceElucidattion >> elucidatePackage: subject html: html [
 { #category : #elucidation }
 EluInstanceElucidattion >> elucidateProject: subject html: html [
 	| top10 project |
-	project := EluProject fromPackageName: subject.
+	project := EluProject fromPackagePrefix: subject.
 	top10 := self topTenInstanceClassesInProject: project.
 	top10
 		ifEmpty: [ html

@@ -17,7 +17,7 @@ EluHelpElucidattion >> elucidatePackage: subject html: html [
 { #category : #elucidation }
 EluHelpElucidattion >> elucidateProject: subject html: html [
 	| project help |
-	project := EluProject fromPackageName: subject.
+	project := EluProject fromPackagePrefix: subject.
 	help := CustomHelp allSubclasses
 		select: [ :cl | project packages includes: cl package ].
 	help

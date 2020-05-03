@@ -2,18 +2,35 @@
 I try to find example code. I look for methods with one of the pragmas mentioned in #findExampleMethods, or whose selector contains the substring 'example'.
 "
 Class {
-	#name : #EluExamplesElucidattion,
+	#name : #EluExamplesProjectElucidattion,
 	#superclass : #Elucidation,
+	#instVars : [
+		'project',
+		'html',
+		'examples'
+	],
 	#category : #'Elucidator-Core'
 }
 
 { #category : #'helper methods' }
-EluExamplesElucidattion >> allClasses [
+EluExamplesProjectElucidattion >> allClasses [
 	^ Object allSubclasses 
 ]
 
+{ #category : #elucidation }
+EluExamplesProjectElucidattion >> analyze [
+	examples := self findExampleMethods
+		select: [ :meth | project packages includes: meth methodClass package ].
+	
+]
+
+{ #category : #elucidation }
+EluExamplesProjectElucidattion >> contributes [ 
+	^ examples isNotEmpty 
+]
+
 { #category : #'helper methods' }
-EluExamplesElucidattion >> diagramLinksFor: aClass example: example html: html [
+EluExamplesProjectElucidattion >> diagramLinksFor: aClass example: example html: html [
 	"Create links to sequence diagram of running the example"
 
 	"create links of the form 'seqdiagram/<class>/<example>'"
@@ -24,7 +41,7 @@ EluExamplesElucidattion >> diagramLinksFor: aClass example: example html: html [
 ]
 
 { #category : #elucidation }
-EluExamplesElucidattion >> elucidateClass: class html: html [
+EluExamplesProjectElucidattion >> elucidateClass: class html: html [
 	| examples |
 	examples := self findExampleMethods
 		select:
@@ -46,7 +63,7 @@ EluExamplesElucidattion >> elucidateClass: class html: html [
 ]
 
 { #category : #elucidation }
-EluExamplesElucidattion >> elucidatePackage: subject html: html [
+EluExamplesProjectElucidattion >> elucidatePackage: subject html: html [
 	| rPack examples |
 	self error: 'Need to be checked'.
 	rPack := self findPackage: subject.
@@ -68,9 +85,9 @@ EluExamplesElucidattion >> elucidatePackage: subject html: html [
 ]
 
 { #category : #elucidation }
-EluExamplesElucidattion >> elucidateProject: subject html: html [
+EluExamplesProjectElucidattion >> elucidateProject: subject html: html [
 	| proj examples |
-	proj := EluProject fromPackageName: subject.
+	proj := EluProject fromPackagePrefix: subject.
 	examples := self findExampleMethods
 		select: [ :meth | proj packages includes: meth methodClass package ].
 	examples
@@ -90,7 +107,7 @@ EluExamplesElucidattion >> elucidateProject: subject html: html [
 ]
 
 { #category : #'helper methods' }
-EluExamplesElucidattion >> findExampleMethods [
+EluExamplesProjectElucidattion >> findExampleMethods [
 	"return a collecion of compiled methods which contain example code."
 
 	"I look for Pragmas of type: #example, exampleWidget #sampleInstance, #script, script:.
@@ -108,4 +125,44 @@ EluExamplesElucidattion >> findExampleMethods [
 					[ :meth | meth selector includesSubstring: 'example' caseSensitive: false ] ])
 		flattened.
 	^ (exampleByName , exampleByPragma) asSet asOrderedCollection
+]
+
+{ #category : #'instance creation' }
+EluExamplesProjectElucidattion >> html: brush [
+	html := brush
+]
+
+{ #category : #'instance creation' }
+EluExamplesProjectElucidattion >> on: prefix [
+	project := EluProject fromPackagePrefix: prefix
+]
+
+{ #category : #elucidation }
+EluExamplesProjectElucidattion >> renderMe [
+	
+	html part: 'Example code' id: 'examples'.
+	" each item is on the form: pharoLink, class>>method, first line of comment if any"
+	html
+		ulist: [ examples
+				do: [ :method | 
+					html
+						item: [ html methodBrowseLink: method.
+							html << method name.
+							(method selector isUnary and: [ method methodClass isMeta ])
+								ifTrue:
+									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
+]
+
+{ #category : #elucidation }
+EluExamplesProjectElucidattion >> synopsis [
+	examples
+		ifNotEmpty: [ html
+				tag: 'li'
+				do: [ html << '<b>Examples:</b> The project contains '
+						<< examples size printString << ' examples. <br>'
+						<< 'See more <a href="#examples">further down</a>' ] ]
+		ifEmpty: [ html
+				tag: 'li'
+				do: [ html << '<b>Examples:</b> No examples in project' ].
+			^ self ]
 ]
