@@ -163,6 +163,5 @@ EluExamplesProjectElucidattion >> synopsis [
 						<< 'See more <a href="#examples">further down</a>' ] ]
 		ifEmpty: [ html
 				tag: 'li'
-				do: [ html << '<b>Examples:</b> No examples in project' ].
-			^ self ]
+				do: [ html << '<b>Examples:</b> No examples in project' ]]
 ]

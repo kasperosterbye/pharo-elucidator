@@ -21,14 +21,13 @@ EluAllElucidation >> elucidateClass: subject html: html [
 { #category : #'as yet unclassified' }
 EluAllElucidation >> elucidatePackage: subject html: html [
 	| elucidations |
-	elucidations := {
-	EluCommentsProjectElucidation on: subject html: html.
-	EluAnnouncerProjectElucidation on: subject html: html.
-	EluExamplesProjectElucidattion   on: subject html: html}.
+	elucidations := {(EluCommentsProjectElucidation on: subject html: html).
+	(EluAnnouncerProjectElucidation on: subject html: html).
+	(EluExamplesProjectElucidattion on: subject html: html).
+	(EluHelpProjectElucidattion on: subject html: html)}.
 	"
-	EluExamplesElucidattion on: subject html: html.
-	EluInstanceElucidattion on: subject html: html."
 	
+	EluInstanceElucidattion on: subject html: html."
 	html tag: 'ul' do: [ elucidations do: [ :el | el synopsis ] ].
 	(elucidations select: [ :el | el contributes ])
 		do: [ :el | el renderMe ]
