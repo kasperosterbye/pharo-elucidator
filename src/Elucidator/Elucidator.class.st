@@ -107,6 +107,63 @@ Elucidator class >> newInstance [
 	^self instance
 ]
 
+{ #category : #slides }
+Elucidator class >> slide1 [
+	<sampleInstance>
+	^ PRRichTextComposer asText:'!Elucidator
+!! Kasper Østerbye
+!! May 4th, 2020'
+]
+
+{ #category : #slides }
+Elucidator class >> slide2 [
+	<sampleInstance>
+	^ PRRichTextComposer asText:'!Elucidate
+!!! (From Merriam Webster)
+
+- to make ''''lucid'''' especially by explanation or analysis
+- ''''Lucid:'''' clear to the understanding
+- Elucidator: One who ''''elucidates''''
+- Elucidation: an act that elucidates
+'
+]
+
+{ #category : #slides }
+Elucidator class >> slide3 [
+	<sampleInstance>
+	^ PRRichTextComposer asText:'!Status
+!!! Prototype / proof of concept
+
+- Finds comments
+- Finds help
+- Finds examples
+- Finds Announcementss
+- Can draw diagrams of things in the image
+
+- Should find pragmas somehow
+- Should find annotations
+- Should find external documentation (on GitHub and in the Pharo books)
+'
+]
+
+{ #category : #slides }
+Elucidator class >> slide4 [
+	<sampleInstance>
+	^ PRRichTextComposer asText:'!Demo
+'
+]
+
+{ #category : #slides }
+Elucidator class >> slide5 [
+	<sampleInstance>
+	^ PRRichTextComposer asText:'!Design principles
+	
+- Wanted to try out integration of webbrowser and image
+- Wanted to give overview by gathering lots of info
+- Wanted to experiment with presenting large diagrams (object and sequence) of actual info from image.
+'
+]
+
 { #category : #menu }
 Elucidator >> about [
 	^ 'Elucidate (verb) means: make (something) clear; explain: work such as theirs will help to elucidate this matter | [with clause] : in what follows I shall try to elucidate what I believe the problems to be.'
