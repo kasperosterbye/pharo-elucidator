@@ -1,5 +1,5 @@
 "
-I am the entry class of the Elucidator project.
+I am the entry class of the Elucidator.
 "
 Class {
 	#name : #Elucidator,

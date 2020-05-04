@@ -29,13 +29,13 @@ EluExamplesProjectElucidattion >> contributes [
 ]
 
 { #category : #'helper methods' }
-EluExamplesProjectElucidattion >> diagramLinksFor: aClass example: example html: html [
+EluExamplesProjectElucidattion >> diagramLinksFor: aClass example: example [
 	"Create links to sequence diagram of running the example"
 
 	"create links of the form 'seqdiagram/<class>/<example>'"
 
 	html
-		elucidateLink: ' Sequence Diagram for example'
+		pharoLink: ' Sequence Diagram for example'
 		to: 'seqdiagram/' , aClass name , '/' , example selector
 ]
 
@@ -81,9 +81,9 @@ EluExamplesProjectElucidattion >> renderMe [
 					html
 						item: [ html methodBrowseLink: method.
 							html << method name.
-							(method selector isUnary and: [ method methodClass isMeta ])
+							"(method selector isUnary and: [ method methodClass isMeta ])
 								ifTrue:
-									[ self diagramLinksFor: method methodClass example: method html: html ] ] ] ]
+									[ self diagramLinksFor: method methodClass example: method ]" ] ] ]
 ]
 
 { #category : #elucidation }

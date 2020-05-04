@@ -54,29 +54,19 @@ h1 {
 </style>'
 ]
 
-{ #category : #'html rendering' }
+{ #category : #'pharo links' }
 ElucidationBrush >> browseClassCommentLink: aClass [
-	self elucidateLinkTo: 'browseClassComment/' , aClass name
+	self pharoLinkTo: 'browseClassComment/' , aClass name
 ]
 
-{ #category : #'html rendering' }
+{ #category : #'pharo links' }
 ElucidationBrush >> classBrowseLink: className [
-	self elucidateLinkTo: 'browseClass/' , className
+	self pharoLinkTo: 'browseClass/' , className
 ]
 
-{ #category : #'html rendering' }
+{ #category : #'pharo links' }
 ElucidationBrush >> classCommentBrowseLink: aClass [
-	self elucidateLinkTo: 'browseClassComment/' , aClass name
-]
-
-{ #category : #'html rendering' }
-ElucidationBrush >> elucidateLink: string to: anchor [
-	self link: string  to: Elucidator instance httpPrefix, anchor
-]
-
-{ #category : #'html rendering' }
-ElucidationBrush >> elucidateLinkTo: anchor [
-	self link: '<img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Pharo.png" height="12">' to: Elucidator instance httpPrefix , anchor
+	self pharoLinkTo: 'browseClassComment/' , aClass name
 ]
 
 { #category : #'html rendering' }
@@ -86,9 +76,9 @@ ElucidationBrush >> heading: title [
 		ifFalse: [ self tag: 'h3' do: [ self << title ] ]
 ]
 
-{ #category : #'html rendering' }
+{ #category : #'pharo links' }
 ElucidationBrush >> helpBrowserLink: helpClass [
-	self elucidateLinkTo: 'helpBrowse/' , helpClass name
+	self pharoLinkTo: 'helpBrowse/' , helpClass name
 ]
 
 { #category : #'response transformers' }
@@ -102,10 +92,10 @@ ElucidationBrush >> htmlString [
 ]
 
 { #category : #'html rendering' }
-ElucidationBrush >> item: string [
-	string isBlock
-		ifTrue: [ self tag: 'li' do: string ]
-		ifFalse: [ self tag: 'li' do: [ self << string ] ]
+ElucidationBrush >> item: stringOrBlock [
+	stringOrBlock isBlock
+		ifTrue: [ self tag: 'li' do: stringOrBlock ]
+		ifFalse: [ self tag: 'li' do: [ self << stringOrBlock ] ]
 ]
 
 { #category : #'html rendering' }
@@ -113,15 +103,15 @@ ElucidationBrush >> link: string to: anchor [
 	self tag: 'a' attributes: {'href'. anchor} do: [ self << string ]
 ]
 
-{ #category : #'html rendering' }
+{ #category : #'pharo links' }
 ElucidationBrush >> methodBrowseLink: aMethod [
-	self elucidateLinkTo: 'browseMethod/' , aMethod methodClass name, '/', aMethod selector
+	self pharoLinkTo: 'browseMethod/' , aMethod methodClass name, '/', aMethod selector
 ]
 
-{ #category : #'html rendering' }
+{ #category : #'pharo links' }
 ElucidationBrush >> methodBrowseLink: selector inClass: className [
 	self
-		elucidateLinkTo: 'browseMethod/' , className , '/' ,  selector
+		pharoLinkTo: 'browseMethod/' , className , '/' ,  selector
 ]
 
 { #category : #'html rendering' }
@@ -204,6 +194,16 @@ ElucidationBrush >> pharoHelp: className [
 		link: self pharoLogo
 		to: Elucidator instance httpPrefix , 'helpBrowse/' , className.
 	self tag: 'em' with: className
+]
+
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoLink: string to: anchor [
+	self link: string  to: Elucidator instance httpPrefix, anchor
+]
+
+{ #category : #'pharo links' }
+ElucidationBrush >> pharoLinkTo: anchor [
+	self link: self pharoLogo  to: Elucidator instance httpPrefix , anchor
 ]
 
 { #category : #'pharo links' }

@@ -31,6 +31,6 @@ EluAllProjectElucidation >> headerForClass: class on: html [
 	| projName |
 	html << 'This class lives in the context of the project: '.
 	projName := self projectName: class package name.
-	html elucidateLink: projName to: 'all/package/' , projName.
+	html pharoLink: projName to: 'all/package/' , projName.
 	html << (String cr , '<hr>' , String cr)
 ]

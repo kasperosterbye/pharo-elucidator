@@ -29,6 +29,7 @@ EluSeqDiagram class >> diagramRequest: request [
 	I handle two kinds of methods - examples and test methods.	"
 
 	| size class example project diagram uml |
+
 	size := (request at: #size ifAbsent: [ '75' ]) asInteger.
 	example := (request at: #example) asSymbol.
 	class := Elucidator classFromHtmlName: (request at: #class).
@@ -37,12 +38,12 @@ EluSeqDiagram class >> diagramRequest: request [
 	diagram
 		maxSize: size;
 		filter: {project name}.
-	WorldState
-		defer: [ (class inheritsFrom: TestCase)
+	(class inheritsFrom: TestCase)
 				ifTrue: [ diagram fromBlock: [ class run: example ] ]
 				ifFalse: [ diagram fromBlock: [ class perform: example ] ].
 			uml := diagram uml.
-			PlantUMLBridge webbrowseUML: uml ].
+	WorldState
+		defer: [ PlantUMLBridge webbrowseUML: uml ].
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;
 		yourself

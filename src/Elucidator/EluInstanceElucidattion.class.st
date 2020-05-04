@@ -13,7 +13,7 @@ EluInstanceElucidattion >> diagramLinksFor: aClass html: html [
 	html << ' Diagrams for random instance. Diagram range: '.
 	1 to: 5 do: [ :range | 
 		html
-			elucidateLink: range printString
+			pharoLink: range printString
 				to: 'objdiagram/' , aClass name , '/' , range printString;
 			<< ' ' ]
 ]
