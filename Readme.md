@@ -17,6 +17,8 @@ The primary way to get elucidation is the `elucidate` method:
 * `anObject elucidate`
 * `'Debugger' elucidate`
 
+The key class to examine is the [<img src="https://avatars1.githubusercontent.com/u/1838382?s=12">](http://localhost:20203/browseClass/Elucidator) `Elucidator` on the class side. For example: [<img src="https://avatars1.githubusercontent.com/u/1838382?s=12">](http://localhost:20203/browseMethod/Elucidator%20class/elucidateObject:range:)`Elucidator>>#elucidateObject:range:`.
+
 ### Background
 I have had a hard time to understand what the different aspects of the pharo image do. This tool try to gather a lot of information about a given project. There is no pharo concept of a `project`, but this tool defines it as all the packages which shares a common prefix upto the first $-. It works well in practice for me. 
 

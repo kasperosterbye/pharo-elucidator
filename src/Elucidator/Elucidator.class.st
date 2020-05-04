@@ -156,7 +156,7 @@ Elucidator class >> slide4 [
 { #category : #slides }
 Elucidator class >> slide5 [
 	<sampleInstance>
-	^ PRRichTextComposer asText:'!Design principles
+	^ PRRichTextComposer asText:'!Design principles 
 	
 - Wanted to try out integration of webbrowser and image
 - Wanted to give overview by gathering lots of info
