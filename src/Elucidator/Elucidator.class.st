@@ -160,7 +160,7 @@ Elucidator class >> slide5 [
 	
 - Wanted to try out integration of webbrowser and image
 - Wanted to give overview by gathering lots of info
-- Wanted to experiment with presenting large diagrams (object and sequence) of actual info from image.
+- Wanted to experiment with presenting large diagrams (object and sequence) of actual info from image. 
 '
 ]
 
