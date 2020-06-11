@@ -9,7 +9,7 @@
 > - I don't understand. You'll have to elucidate.  
 > - The reasons for the change in weather conditions have been elucidated by several scientists.
 
-The elucidator is a set of tools which will try to explain and clearify projects of Pharo code.
+The elucidator is a set of tools which will try to explain and clarify projects of Pharo code.
 
 The primary way to get elucidation is the `elucidate` method:
 
