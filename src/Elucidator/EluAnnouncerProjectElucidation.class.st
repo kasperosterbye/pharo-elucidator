@@ -43,7 +43,7 @@ EluAnnouncerProjectElucidation >> findAnnouncementsClassIn: ast [
 		select: [ :node | 
 			node isVariable
 				and:
-					[ node isGlobal and: [ (node name asClassIfAbsent: [ nil ]) notNil ] ] ].
+					[ node isGlobalVariable and: [ (node name asClassIfAbsent: [ nil ]) notNil ] ] ].
 	^ allClasses select: [ :globalNode | 
 			globalNode name asClass in: [:cl | cl= Announcement or: [ cl inheritsFrom: Announcement ]
 				]]
@@ -87,7 +87,7 @@ EluAnnouncerProjectElucidation >> findSubscriberMatrix [
 	| patterns supscriptions triplets |
 	patterns := #(#when:send:to: #when:send:to:with: #when:send:to:withArguments:).
 	"Beware of methodDef realClass package - methodDef is a Ring, and the project packages are RPackage"
-	supscriptions := (patterns collect: [ :sel | sel senders ]) flattened
+	supscriptions := ((patterns collect: [ :sel | sel senders ]) joinUsing: #())
 		select: [ :methodDef | project packages includes: methodDef realClass package ].
 	"subscriptions are all methods in package which contain a subsription"
 	triplets := OrderedCollection new.
@@ -96,7 +96,7 @@ EluAnnouncerProjectElucidation >> findSubscriberMatrix [
 			meth ast sendNodes
 				select: [ :send | 
 					(patterns includes: send selector)
-						and: [ send arguments third class = RBSelfNode ] ]
+						and: [ send arguments third isSelfVariable ] ]
 				thenCollect: [ :send | 
 					triplets
 						add:

@@ -26,7 +26,7 @@ EluCommentsProjectElucidation >> analyze [
 	classComments := ((project classes
 		collect: [ :cl | cl -> cl instanceSide organization classComment ])
 		asOrderedCollection
-		sort: [ :p1 :p2 | p1 value size > p2 value size ]) takeFirst: 10.
+		sort: [ :p1 :p2 | p1 value size > p2 value size ]) first: 10.
 ]
 
 { #category : #'helper methods' }

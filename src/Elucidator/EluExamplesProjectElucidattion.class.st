@@ -56,7 +56,7 @@ EluExamplesProjectElucidattion >> findExampleMethods [
 			cl methods
 				select:
 					[ :meth | meth selector includesSubstring: 'example' caseSensitive: false ] ])
-		flattened.
+		joinUsing: #().
 	^ (exampleByName , exampleByPragma) asSet asOrderedCollection
 ]
 

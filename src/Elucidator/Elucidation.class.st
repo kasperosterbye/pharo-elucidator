@@ -28,7 +28,7 @@ Elucidation class >> on: subject html: html [
 	^ self new on: subject; html: html; analyze
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'helper methods' }
 Elucidation >> contributes [
 	"return true if I have something to contribute to the elucidation of subject"
 	self subclassResponsibility 

@@ -37,7 +37,7 @@ EluObjModel class >> diagramRequest: req [
 	range := (req at: #range) asNumber.
 	instances := class allInstances ifEmpty: [ class allSubInstances ].
 	obj := instances
-		in: [ :col | col at: (Random new nextInt: col size) ].
+		in: [ :col | col at: (Random new nextInteger: col size) ].
 	(self new range: range from: obj) webbrowseDiagram.
 	^ ZnResponse new
 		statusLine: ZnStatusLine noContent;

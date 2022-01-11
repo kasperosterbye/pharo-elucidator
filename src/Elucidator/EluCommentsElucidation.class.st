@@ -68,7 +68,7 @@ EluCommentsElucidation >> findNumberOfSendersOf: selector [
 	"private method. Assumes allMethod is cleared elsewhere at the right times"
 
 	allMethods := allMethods
-		ifNil: [ (Object allSubclasses collect: [ :c | c methods ]) flattened ].
+		ifNil: [ (Object allSubclasses collect: [ :c | c methods ]) joinUsing: #() ].
 	^ allMethods count: [ :m | (m hasLiteral: selector) ]
 ]
 

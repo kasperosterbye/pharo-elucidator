@@ -79,6 +79,34 @@ Elucidator class >> elucidateProject: packageName [
 	self instance openBrowserOnProject: (packageName copyUpTo: $-)
 ]
 
+{ #category : #slides }
+Elucidator class >> exampleIceberg [
+	<script>
+	"Iceberg has a lot of announcements"
+	self elucidateProject: 'Iceberg'
+]
+
+{ #category : #slides }
+Elucidator class >> exampleSequenceDiagram [
+	<script>
+	"Huge diagram"
+	self elucidateBlock: [ self elucidateBlock: [' monkey ' trim] ]
+]
+
+{ #category : #slides }
+Elucidator class >> exampleStringTrim [
+	<script>
+	"Simple sequence diagram"
+	self elucidateBlock: [ ' monkey ' trim ]
+]
+
+{ #category : #slides }
+Elucidator class >> exampleTeapot [
+	<script>
+	"Teapot has some good sample instances"
+	self elucidateProject: 'Teapot'
+]
+
 { #category : #utility }
 Elucidator class >> htmlNameForClass: aClass [
 	"meta classes print as 'String class', which can confuse plantuml."
@@ -110,20 +138,20 @@ Elucidator class >> newInstance [
 { #category : #slides }
 Elucidator class >> slide1 [
 	<sampleInstance>
-	^ PRRichTextComposer asText:'!Elucidator
-!! Kasper Østerbye
-!! May 4th, 2020'
+	^ MicRichTextComposer microdownAsRichText: '# Elucidator
+## Kasper Østerbye
+## May 4th, 2020'
 ]
 
 { #category : #slides }
 Elucidator class >> slide2 [
 	<sampleInstance>
-	^ PRRichTextComposer asText:'!Elucidate
-!!! (From Merriam Webster)
+	^ MicRichTextComposer microdownAsRichText: '#Elucidate
+### (From Merriam Webster)
 
-- to make ''''lucid'''' especially by explanation or analysis
-- ''''Lucid:'''' clear to the understanding
-- Elucidator: One who ''''elucidates''''
+- to make _lucid_ especially by explanation or analysis
+- _Lucid:_ clear to the understanding
+- Elucidator: One who _elucidates_
 - Elucidation: an act that elucidates
 '
 ]
@@ -131,8 +159,8 @@ Elucidator class >> slide2 [
 { #category : #slides }
 Elucidator class >> slide3 [
 	<sampleInstance>
-	^ PRRichTextComposer asText:'!Status
-!!! Prototype / proof of concept
+	^ MicRichTextComposer microdownAsRichText: '#Status
+### Prototype / proof of concept
 
 - Finds comments
 - Finds help
@@ -149,14 +177,14 @@ Elucidator class >> slide3 [
 { #category : #slides }
 Elucidator class >> slide4 [
 	<sampleInstance>
-	^ PRRichTextComposer asText:'!Demo
+	^ MicRichTextComposer microdownAsRichText: '# Demo
 '
 ]
 
 { #category : #slides }
 Elucidator class >> slide5 [
 	<sampleInstance>
-	^ PRRichTextComposer asText:'!Design principles 
+	^ MicRichTextComposer microdownAsRichText: '#Design principles 
 	
 - Wanted to try out integration of webbrowser and image
 - Wanted to give overview by gathering lots of info
@@ -265,6 +293,7 @@ Elucidator >> initialize [
 { #category : #dispatching }
 Elucidator >> openBrowserOnClass: class [
 	| url |
+	self error: 'Not implemented yet - only project supported'.
 	url := self httpPrefix , 'all/class/' , class name.
 	WebBrowser openOn: url
 ]
@@ -272,6 +301,7 @@ Elucidator >> openBrowserOnClass: class [
 { #category : #dispatching }
 Elucidator >> openBrowserOnPackage: packageName [
 	| url |
+	self error: 'Not implemented yet - only project supported'.
 	url := self httpPrefix , 'all/package/' , packageName.
 	WebBrowser openOn: url
 ]

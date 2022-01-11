@@ -122,7 +122,7 @@ EluSeqDiagram >> needToTruncate [
 
 	maxSize := maxSize - 1.
 	maxSize = 0
-		ifTrue: [ ^ String cr ,+ '== diagram truncated from here ==' ,+ String cr ].
+		ifTrue: [ ^ String cr , '== diagram truncated from here ==' , String cr ].
 	maxSize <= 0
 		ifTrue: [ ^ ' ' ].
 	^''
