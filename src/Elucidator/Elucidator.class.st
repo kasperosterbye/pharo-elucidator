@@ -87,10 +87,9 @@ Elucidator class >> exampleIceberg [
 ]
 
 { #category : #slides }
-Elucidator class >> exampleSequenceDiagram [
+Elucidator class >> exampleLargeSequenceDiagram [
 	<script>
-	"Huge diagram"
-	self elucidateBlock: [ self elucidateBlock: [' monkey ' trim] ]
+	self elucidateBlock: [Float pi printString]
 ]
 
 { #category : #slides }
